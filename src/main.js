@@ -2,7 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import './plugins/quasar'
+
+import '@/plugins/quasar'
+import '@/plugins/moment'
 
 Vue.config.productionTip = false
 

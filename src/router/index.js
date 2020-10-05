@@ -1,22 +1,40 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import DefaultLayout from '@/views/DefaultLayout.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: DefaultLayout,
+    children: [
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue')
+      },
+      {
+        path: '/device-management',
+        name: 'DeviceManagement',
+        component: () => import(/* webpackChunkName: "device" */ '../views/Device.vue')
+      },
+      {
+        path: '/scheduling-management',
+        name: 'SchedulingManagement',
+        component: () => import(/* webpackChunkName: "scheduling" */ '../views/Scheduling.vue')
+      },
+      {
+        path: '/setting',
+        name: 'Setting',
+        component: () => import(/* webpackChunkName: "setting" */ '../views/Setting.vue')
+      },
+      {
+        path: '/user-management',
+        name: 'UserManagement',
+        component: () => import(/* webpackChunkName: "user" */ '../views/User.vue')
+      }
+    ]
   }
 ]
 

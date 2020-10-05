@@ -1,0 +1,67 @@
+// reset and set common css
+* {
+  box-sizing: border-box;
+}
+html {
+  color: var(--q-color-dark)
+}
+label {
+  display: inline-block;
+}
+input {
+  outline: none;
+}
+span {
+  display: inline-block;
+}
+// custom
+.q-custom-table {
+  overflow: scroll;
+  min-height: 150px;
+  max-height: 400px;
+  color: var(--q-color-info);
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th {
+    background-color: #fff;
+  }
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+  thead tr:last-child th {
+    top: 48px;
+  }
+  thead tr:first-child th {
+    top: 0
+  }
+}
+.sc-table-card {
+  flex-direction: column;
+}
+.q-table tr.sc-table-tr-th th {
+  font-size: 18px;
+  font-weight: 500;
+}
+.q-table tr.sc-table-tr-td td {
+  font-size: 16px;
+  font-weight: 400;
+}
+.q-table tr.sc-table-tr-td::after {
+  z-index: -1;
+}
+.q-table tbody td:after {
+  background: transparent;
+}
+.q-table tbody td:before {
+  background: var(--q-color-secondary);
+  opacity: .4;
+}
+@media (max-width:1439px) {
+  .q-table tr.sc-table-tr-th th {
+    font-size: 16px;
+  }
+  .q-table tr.sc-table-tr-td td {
+    font-size: 12px;
+  }
+}
