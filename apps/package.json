@@ -1,0 +1,42 @@
+{
+  "name": "nodesfly",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "serve": "cross-env NODE_ENV=development webpack --progress --watch --hide-modules",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+  },
+  "author": "SoftChef",
+  "license": "SoftChef",
+  "dependencies": {
+    "aws-sdk": "^2.692.0",
+    "axios": "^0.20.0",
+    "mailchimp-api-v3": "^1.14.0",
+    "md5": "^2.3.0",
+    "miap-io": "git+ssh://git@github.com/SoftChef/miap-io.git#master"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.1",
+    "aws-sdk-mock": "^5.1.0",
+    "babel-loader": "^8.1.0",
+    "chai": "^4.2.0",
+    "copy-webpack-plugin": "^6.1.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "miap-webpack": "git+ssh://git@github.com/SoftChef/miap-webpack.git#master",
+    "mocha": "^7.2.0",
+    "sinon": "^9.0.2",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
