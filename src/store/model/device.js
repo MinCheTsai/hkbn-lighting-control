@@ -12,6 +12,7 @@ export class Controller {
     this.location = controller.location || null
     this.status = controller.status || false
     this.switch = controller.control || false
+    this.gateway = controller.gateway || 'BCA5567A123'
   }
 }
 export class Group {

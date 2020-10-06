@@ -2,7 +2,7 @@
   <div>
     <div class="row justify-between">
       <h6 class="q-ma-none">Group</h6>
-      <q-btn color="secondary" label="Add Group" no-caps class="text-caption text-weight-medium glossy"></q-btn>
+      <q-btn @click="popupCreateGroup=true" color="secondary" label="Add Group" no-caps class="text-caption text-weight-medium glossy"></q-btn>
     </div>
     <q-card class="full-width q-mt-md">
       <q-table
@@ -47,10 +47,14 @@
         </template>
       </q-table>
     </q-card>
+    <q-dialog v-model="popupCreateGroup" persistent transition-show="scale" transition-hide="scale">
+      <create-group @close="popupCreateGroup=false" />
+    </q-dialog>
   </div>
 </template>
 
 <script>
+import createGroup from './CreateGroup'
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
@@ -60,8 +64,12 @@ export default {
       default: false
     }
   },
+  components: {
+    'create-group': createGroup
+  },
   data () {
     return {
+      popupCreateGroup: false,
       tableColumns: [
         {
           name: 'number',

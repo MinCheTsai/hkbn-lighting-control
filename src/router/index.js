@@ -8,6 +8,7 @@ const routes = [
   {
     path: '/',
     component: DefaultLayout,
+    redirect: '/dashboard',
     children: [
       {
         path: '/dashboard',

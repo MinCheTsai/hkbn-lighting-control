@@ -35,7 +35,7 @@ export default {
     }
   },
   mutations: {
-    initDevices (state) {
+    InitDevices (state) {
       state.Gateways = []
       state.Controllers = []
       state.Groups = []

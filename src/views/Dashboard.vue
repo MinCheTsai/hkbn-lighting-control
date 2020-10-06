@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h3 class="q-mt-none">Dashboard</h3>
-    <h5>Gateway</h5>
-    <table class="sc-table">
+    <h4 class="q-mt-none">Dashboard</h4>
+    <h6 class="q-mb-none">Gateway</h6>
+    <table class="sc-table q-mt-sm">
       <tr>
         <td>Number of Gateway(Connected)</td>
         <td>Total of Gateway(on-board)</td>
@@ -12,8 +12,8 @@
         <td>15</td>
       </tr>
     </table>
-    <h5>Controller</h5>
-    <table class="sc-table">
+    <h6 class="q-mb-none">Controller</h6>
+    <table class="sc-table q-mt-sm">
       <tr>
         <td>Number of Controller(Connected)</td>
         <td>Total of Controller(on-board)</td>

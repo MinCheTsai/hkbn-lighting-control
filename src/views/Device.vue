@@ -43,14 +43,14 @@ export default {
     }
   },
   beforeMount () {
-    this.initDevices()
+    this.InitDevices()
     this.fetchGateways()
     this.fetchControllers()
     this.fetchGroups()
   },
   methods: {
     ...mapMutations('device', [
-      'initDevices',
+      'InitDevices',
       'SetGateways',
       'SetControllers',
       'SetGroups'

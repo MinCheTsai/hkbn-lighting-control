@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import device from './device'
+import schedule from './schedule'
+import location from './location'
 
 Vue.use(Vuex)
 
@@ -17,6 +19,8 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    device
+    device,
+    schedule,
+    location
   }
 })
