@@ -7,12 +7,9 @@
     <div class="row">
       <div class="col-8">
         <label class="text-subtitle1 q-mb-sm">Name</label>
-        <q-input dense outlined v-model="name" :rules="[ val => val && val.length > 0 || 'This feild is required']"/>
+        <q-input disable dense outlined v-model="name" :rules="[ val => val && val.length > 0 || 'This feild is required']"/>
         <label class="text-subtitle1 q-mb-sm q-mt-md">Email</label>
-        <q-input dense outlined v-model="email" :rules="[ val => val && val.length > 0 || 'This feild is required']"/>
-        <div class="row justify-end q-mt-lg">
-          <q-btn color="primary" label="Save" no-caps class="glossy"></q-btn>
-        </div>
+        <q-input disable dense outlined v-model="email" :rules="[ val => val && val.length > 0 || 'This feild is required']"/>
       </div>
     </div>
     <q-dialog v-model="popupChangePassword" persistent transition-show="scale" transition-hide="scale">

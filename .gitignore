@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-/dists
+checksum
 
 
 # local env files
