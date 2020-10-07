@@ -1,7 +1,6 @@
 <template>
   <q-layout view="hHh lpR lFf">
     <sc-header />
-    <sc-drawer />
     <q-page-container>
       <q-page class="bg-accent q-pa-xl">
         <router-view />
@@ -12,12 +11,9 @@
 
 <script>
 import Header from '@/components/Header'
-import Drawer from '@/components/Drawer'
-
 export default {
   components: {
-    'sc-header': Header,
-    'sc-drawer': Drawer
+    'sc-header': Header
   }
 }
 </script>

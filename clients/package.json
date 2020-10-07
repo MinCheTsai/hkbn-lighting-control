@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "aws-amplify": "^3.3.3",
     "core-js": "^3.6.5",
     "moment-timezone": "^0.5.31",
     "quasar": "^1.0.0",

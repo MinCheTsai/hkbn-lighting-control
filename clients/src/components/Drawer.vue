@@ -41,11 +41,20 @@
           <q-item-label>User Management</q-item-label>
         </q-item-section>
       </q-item>
+      <q-item @click="signOut" clickable class="text-primary">
+        <q-item-section avatar>
+          <q-icon name="login" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Log Out</q-item-label>
+        </q-item-section>
+      </q-item>
     </q-list>
   </q-drawer>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   computed: {
     leftDrawerOpen: {
@@ -55,6 +64,23 @@ export default {
       set () {
         this.$store.commit('ToggleDrawer')
       }
+    }
+  },
+  methods: {
+    ...mapActions('user', [
+      'SignOut'
+    ]),
+    signOut () {
+      this
+        .SignOut()
+        .then(result => {
+          this.$router.push({ name: 'Login' })
+          this._showSuccessNotify('Success Log Out.')
+        })
+        .catch(error => {
+          this._showErrorNotify(`Error: ${error.message}`)
+          console.log('SignOut', error)
+        })
     }
   }
 }
