@@ -25,14 +25,14 @@
           <q-item-label>Scheduling Management</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item clickable :to="{ name: 'Setting' }" active-class="bg-primary glossy text-white" class="text-primary">
+      <!-- <q-item clickable :to="{ name: 'Setting' }" active-class="bg-primary glossy text-white" class="text-primary">
         <q-item-section avatar>
           <q-icon name="settings" />
         </q-item-section>
         <q-item-section>
           <q-item-label>Setting</q-item-label>
         </q-item-section>
-      </q-item>
+      </q-item> -->
       <q-item clickable :to="{ name: 'UserManagement' }" active-class="bg-primary glossy text-white" class="text-primary">
         <q-item-section avatar>
           <q-icon name="account_circle" />
