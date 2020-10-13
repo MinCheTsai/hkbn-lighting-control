@@ -25,8 +25,19 @@ const routes = [
       },
       {
         path: 'device-management',
-        name: 'DeviceManagement',
-        component: () => import(/* webpackChunkName: "device" */ '../views/app/Device.vue')
+        component: () => import(/* webpackChunkName: "device" */ '../views/app/Device.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'GatewaysManagement',
+            component: () => import(/* webpackChunkName: "device" */ '../views/app/device/index.vue')
+          },
+          {
+            path: ':gateway',
+            name: 'GroupsManagement',
+            component: () => import(/* webpackChunkName: "device" */ '../views/app/device/Groups.vue')
+          }
+        ]
       },
       {
         path: 'scheduling-management',

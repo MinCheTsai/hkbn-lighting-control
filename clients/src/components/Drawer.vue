@@ -9,7 +9,7 @@
           <q-item-label>Dashboard</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item clickable :to="{ name: 'DeviceManagement' }" active-class="bg-primary glossy text-white" class="text-primary">
+      <q-item clickable :to="{ name: 'GatewaysManagement' }" active-class="bg-primary glossy text-white" class="text-primary">
         <q-item-section avatar>
           <q-icon name="devices" />
         </q-item-section>

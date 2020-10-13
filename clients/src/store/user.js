@@ -1,11 +1,12 @@
-import { Auth } from 'aws-amplify'
+import { Auth, API } from 'aws-amplify'
+import { user } from '../../config'
 
 export default {
   namespaced: true,
   state: {
     Token: null,
     TokenValidityPeriod: null,
-    defaultEmail: 'xxx@xxx.com'
+    User: user
   },
   getters: {
   },
@@ -32,11 +33,11 @@ export default {
       return Auth.currentAuthenticatedUser()
     },
     GetToken ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('12345678abc')
-        }, 1500)
-      })
+      const body = {
+        email: state.User.email,
+        password: state.User.password
+      }
+      return API.post('proxy-light-control', '/login', { body })
     }
   }
 }

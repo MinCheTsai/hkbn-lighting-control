@@ -4,7 +4,7 @@
       <h6 class="q-ma-none">Gateway</h6>
       <q-btn @click="popupCreateGateway=true" color="secondary" label="Add Gateway" no-caps class="text-caption text-weight-medium glossy"></q-btn>
     </div>
-    <q-card class="full-width q-mt-md">
+    <!-- <q-card class="full-width q-mt-md">
       <q-table
         color="secondary"
         class="q-custom-table"
@@ -45,7 +45,7 @@
           </q-tr>
         </template>
       </q-table>
-    </q-card>
+    </q-card> -->
     <q-dialog v-model="popupCreateGateway" persistent transition-show="scale" transition-hide="scale">
       <create-gateway @close="popupCreateGateway=false" />
     </q-dialog>

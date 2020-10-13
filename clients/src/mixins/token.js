@@ -16,7 +16,7 @@ export default {
     ]),
     checkTokenValidityPeriod () {
       if (this.Token) {
-        if (Date.now() - this.TokenValidityPeriod > 1000 * 60 * 25) return false
+        if (Date.now() - this.TokenValidityPeriod > 1000 * 60 * 55) return false
         else return true
       } else {
         return false
@@ -27,11 +27,15 @@ export default {
         this
           .GetToken()
           .then(result => {
-            this.SetToken(result)
-            resolve(true)
+            if (result.status === 'success') {
+              this.SetToken(result.data.token)
+              resolve(true)
+            } else {
+              reject(new Error(result))
+            }
           })
           .catch(error => {
-            console.log(error)
+            console.log('error', error)
             reject(new Error(false))
           })
       })

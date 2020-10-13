@@ -8,7 +8,7 @@
       <q-table
         color="secondary"
         class="q-custom-table"
-        :data="ControllersArray"
+        :data="DefaultControllers"
         :columns="tableColumns"
         :loading="loading"
         :row-key="row => row.number"
@@ -40,8 +40,9 @@
               {{ props.row.status ? 'Connected' : 'Disconnected' }}
             </q-td>
             <q-td key="control" :props="props" class="q-gutter-x-sm">
-              <q-btn :disable="!props.row.status" @click="switchControl(props.row, true)" :outline="!props.row.switch" color="positive" label="ON" no-caps class="text-caption text-weight-medium glossy"></q-btn>
-              <q-btn :disable="!props.row.status" @click="switchControl(props.row, false)" :outline="props.row.switch" color="negative" label="OFF" no-caps class="text-caption text-weight-medium glossy"></q-btn>
+              <q-btn @click="turnOnOff(props.row.mac)">Switch</q-btn>
+              <!-- <q-btn :disable="!props.row.status" @click="switchControl(props.row, true)" :outline="!props.row.switch" color="positive" label="ON" no-caps class="text-caption text-weight-medium glossy"></q-btn> -->
+              <!-- <q-btn :disable="!props.row.status" @click="switchControl(props.row, false)" :outline="props.row.switch" color="negative" label="OFF" no-caps class="text-caption text-weight-medium glossy"></q-btn> -->
             </q-td>
           </q-tr>
         </template>
@@ -55,7 +56,7 @@
 
 <script>
 import createController from './CreateController'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
 export default {
   props: {
@@ -109,16 +110,29 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('device', [
-      'ControllersArray'
+    ...mapState('device', [
+      'DefaultControllers'
     ])
   },
   methods: {
     ...mapMutations('device', [
       'SwitchController'
     ]),
+    ...mapActions('device', [
+      'SingleLightOn'
+    ]),
     switchControl (controller, status) {
       this.SwitchController({ controller, status })
+    },
+    turnOnOff (mac) {
+      this
+        .SingleLightOn(mac)
+        .then(result => {
+          console.log(result)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
     onScroll ({ to, ref }) {
     }

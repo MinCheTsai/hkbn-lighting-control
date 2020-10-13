@@ -9,6 +9,7 @@ import tokenMixins from '@/mixins/token.js'
 import '@/plugins/quasar'
 import '@/plugins/moment'
 import '@/plugins/amplify'
+import '@/plugins/axios'
 
 Vue.config.productionTip = false
 

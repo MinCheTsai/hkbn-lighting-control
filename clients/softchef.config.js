@@ -32,10 +32,7 @@ export const gateways = [
 
 export const groups = [
   {
-    panid: '0016',
-    name: 'test',
-    loading: false,
-    switch: null
+    panID: '0016'
   }
 ]
 

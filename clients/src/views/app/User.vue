@@ -12,7 +12,7 @@
         <q-input disable dense outlined v-model="email" />
       </div>
     </div>
-    <q-btn :loading="loading" @click="test">Test</q-btn>
+    <!-- <q-btn :loading="loading" @click="test">Test</q-btn> -->
     <q-dialog v-model="popupChangePassword" persistent transition-show="scale" transition-hide="scale">
       <change-password :user="user" @close="popupChangePassword=false" />
     </q-dialog>
