@@ -1,12 +1,12 @@
 import { API } from 'aws-amplify'
 import { Controller } from './model/device'
-import { gateways, groups } from '../../config'
+import { gateways } from '../../config'
 
 export default {
   namespaced: true,
   state: {
     Gateways: gateways,
-    Groups: groups
+    Groups: null
   },
   getters: {
     GatewaysArray (state) {
@@ -18,15 +18,14 @@ export default {
       return array
     },
     GroupsArray (state) {
-      const array = []
-      array.push(...state.Groups)
-      array.forEach((a, i) => {
-        a.number = i + 1
-      })
-      return array
+      if (state.Groups) return state.Groups
+      else return []
     }
   },
   mutations: {
+    SetGroups (state, groups) {
+      state.Groups = groups
+    },
     InitControllers (state, panid) {
       const gIndex = state.Groups.findIndex(group => group.panid === panid)
       if (gIndex < 0) return

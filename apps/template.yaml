@@ -13,7 +13,7 @@ Parameters:
 
   BucketName:
     Type: String
-    Default: miap-pocjason-ap-southeast-1 ## 隨環境更改
+    Default: poc-karin-uat-ap-southeast-1 ## 隨環境更改
 
   UserEmail:
     Type: String
@@ -271,10 +271,10 @@ Outputs:
     Export:
       Name: !Join ['-', [ !Ref AppName, 'UserPoolId']]
 
-  UserPoolArn:
-    Value: !GetAtt UserPool.Arn
+  IdentityPoolId:
+    Value: !Ref UserIdentityPool
     Export:
-      Name: !Join ['-', [ !Ref AppName, 'UserPoolArn']]
+      Name: !Join ['-', [ !Ref AppName, 'IdentityPoolId']]
 
   UserPoolWebClientId:
     Value: !Ref UserPoolWebClient

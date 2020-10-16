@@ -4,10 +4,12 @@
       <router-link :to="{ name: 'GatewaysManagement' }">Gateway List</router-link>
     </span>
     <p class="text-subtitle1 q-mt-xl">Select Your Gateway :</p>
-    <div class="row">
+    <div class="row q-gutter-x-lg">
       <template v-for="(gateway,index) in GatewaysArray">
         <div class="col-4" :key="`gateway-${index}`">
-          <q-card @click="routeToGroupsManagement(gateway.UID)" class="text-center text-primary q-py-lg cursor-pointer">UID: {{ gateway.UID }}</q-card>
+          <q-card @click="routeToGroupsManagement(gateway)" class="text-center text-primary q-py-lg cursor-pointer">
+            <p class="q-my-none">{{ gateway.name }}</p>
+          </q-card>
         </div>
       </template>
     </div>
@@ -15,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   data () {
@@ -28,9 +30,13 @@ export default {
     ])
   },
   methods: {
-    routeToGroupsManagement (UID) {
-      if (!UID) return
-      this.$router.push({ name: 'GroupsManagement', params: { gateway: UID } })
+    ...mapMutations('device', [
+      'SetGroups'
+    ]),
+    routeToGroupsManagement (gateway) {
+      if (!gateway.UID && !gateway.groups) return
+      this.SetGroups(gateway.groups)
+      this.$router.push({ name: 'GroupsManagement', params: { gateway: gateway.UID } })
     }
   }
 }

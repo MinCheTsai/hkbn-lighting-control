@@ -5,14 +5,13 @@
       <router-link :to="{ name: 'GroupsManagement' }">Group &#38; Controller List</router-link>
     </span>
     <q-card class="full-width q-mt-md">
-      {{GroupsArray}}
       <q-table
         color="secondary"
         class="q-custom-table"
         :data="GroupsArray"
         :columns="tableColumns"
         :loading="loading"
-        :row-key="row => row.number"
+        :row-key="row => row.panid"
         virtual-scroll
         :virtual-scroll-item-size="54"
         :virtual-scroll-sticky-size-start="200"

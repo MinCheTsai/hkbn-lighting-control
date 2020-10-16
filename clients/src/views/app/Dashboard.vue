@@ -8,8 +8,8 @@
         <td>Total of Gateway(on-board)</td>
       </tr>
       <tr>
-        <td>10</td>
-        <td>15</td>
+        <td>2</td>
+        <td>2</td>
       </tr>
     </table>
     <h6 class="q-mb-none">Controller</h6>
@@ -19,8 +19,8 @@
         <td>Total of Controller(on-board)</td>
       </tr>
       <tr>
-        <td>10</td>
-        <td>15</td>
+        <td>6</td>
+        <td>6</td>
       </tr>
     </table>
   </div>
