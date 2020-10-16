@@ -9,6 +9,10 @@ export const API = {
     {
       name: 'proxy-light-control',
       endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
+    },
+    {
+      name: 'schedule-api',
+      endpoint: 'https://9m7n5kwrig.execute-api.ap-southeast-1.amazonaws.com/Prod'
     }
   ]
 }

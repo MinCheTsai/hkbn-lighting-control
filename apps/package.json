@@ -10,7 +10,6 @@
         "aws-sdk": "^2.511.0",
         "axios": "^0.20.0",
         "lodash": "^4.17.11",
-        "mailchimp-api-v3": "^1.14.0",
         "md5": "^2.3.0",
         "moment": "^2.24.0",
         "softchef-utility": "^1.0.2"

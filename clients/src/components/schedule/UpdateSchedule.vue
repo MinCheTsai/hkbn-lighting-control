@@ -3,9 +3,9 @@
     <div class="q-pa-md bg-primary glossy">
       <div class="text-h6 text-white">Add Schedule</div>
     </div>
-    <q-form @submit="submitCreate">
+    <q-form @submit="submitUpdate">
       <div class="q-pa-md">
-        <q-input dense outlined v-model="name" label="Name" :rules="[ val => val && val.length > 0 || 'This feild is required', val => val.length < 49 || 'Max Length 48 Characters', val => /^[\.\-A-Za-z0-9]+$/.test(val) || 'Format Example: My-Schedule1.0']" class="q-mt-md" />
+        <q-input disable dense outlined v-model="name" label="Name" :rules="[ val => val && val.length > 0 || 'This feild is required', val => val.length < 49 || 'Max Length 48 Characters', val => /^[\.\-A-Za-z0-9]+$/.test(val) || 'Format Example: My-Schedule1.0']" class="q-mt-md" />
         <q-select dense emit-value map-options outlined v-model="group" :options="GroupsArray" option-label="name" option-value="panid" label="Group" :rules="[ val => val && val.length > 0 || 'This feild is required']" class="q-mt-md">
           <template v-slot:option="scope">
             <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
@@ -52,7 +52,7 @@
       </div>
       <div class="row justify-end q-pa-md q-gutter-x-md">
         <q-btn @click="closePopup" outline no-caps color="info" label="Cancel" style="width:72px"></q-btn>
-        <q-btn :loading="creating" type="submit" unelevated no-caps color="secondary" label="Add" class="glossy" style="width:72px"></q-btn>
+        <q-btn :loading="updating" type="submit" unelevated no-caps color="secondary" label="Update" class="glossy" style="width:72px"></q-btn>
       </div>
     </q-form>
   </div>
@@ -62,11 +62,17 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
+  props: {
+    schedule: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
-      creating: false,
+      updating: false,
       name: null,
-      mode: 'Open',
+      mode: 'on',
       group: null,
       time: null,
       repeat: [],
@@ -85,43 +91,53 @@ export default {
     }
   },
   beforeMount () {
+    this.name = this.schedule.name
+    this.mode = this.schedule.mode
+    this.group = this.schedule.group
+    this.time = this.schedule.time
+    this.repeat = this.schedule.repeat
   },
   methods: {
     ...mapMutations('schedule', [
-      'SetSchedule'
+      'RenewSchedule'
     ]),
     ...mapActions('schedule', [
-      'CreateSchedule'
+      'UpdateSchedule'
     ]),
     closePopup () {
-      if (this.creating) return
+      if (this.updating) return
       this.$emit('close')
     },
-    submitCreate () {
+    submitUpdate () {
       if (this.repeat.length < 1) {
         this.repeatError = true
         return
       }
-      this.creating = true
+      this.updating = true
       this
-        .CreateSchedule({
-          uid: this.$route.params.gateway,
-          panid: this.group,
-          name: this.name,
-          mode: this.mode,
-          days: this.repeat,
-          time: this.time
+        .UpdateSchedule({
+          // uid: this.$route.params.gateway,
+          // panid: this.group,
+          // name: this.name,
+          // mode: this.mode,
+          // days: this.repeat,
+          // time: this.time
         })
         .then(({ data }) => {
-          this.SetSchedule({ id: data, name: data.split('_')[1], mode: this.mode, time: this.time, repeat: this.repeat, group: this.group, active: true })
-          this._showSuccessNotify('Create Schedule Success')
-          this.creating = false
-          this.closePopup()
+          // console.log('======result======')
+          // console.log(data)
+          // console.log('======result======')
+          // this.SetSchedule({ id: data, name: data.split('_')[1], mode: this.mode, time: this.time, repeat: this.repeat, group: this.group, active: true })
+          // this._showSuccessNotify('Update Schedule Success')
+          // this.updating = false
+          // this.closePopup()
         })
         .catch(error => {
+          // console.log('======error======')
           console.log(error)
-          this._showErrorNotify('Create Schedule Failed')
-          this.creating = false
+          // console.log('======error======')
+          // this._showErrorNotify('Update Schedule Failed')
+          // this.updating = false
         })
     }
   }

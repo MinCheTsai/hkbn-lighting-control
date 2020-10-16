@@ -1,13 +1,13 @@
 <template>
   <div>
     <span>
-      <router-link :to="{ name: 'GatewaysManagement' }">Gateway List</router-link>
+      <router-link :to="{ name: 'SchedulingManagement' }">Schedule Home Page</router-link>
     </span>
     <p class="text-subtitle1 q-mt-xl">Select Your Gateway :</p>
     <div class="row">
       <template v-for="(gateway,index) in GatewaysArray">
         <div class="col-4" :key="`gateway-${index}`">
-          <q-card @click="routeToGroupsManagement(gateway.UID)" class="text-center text-primary q-py-lg cursor-pointer">UID: {{ gateway.UID }}</q-card>
+          <q-card @click="routeToScheduleListManagement(gateway.UID)" class="text-center text-primary q-py-lg cursor-pointer">UID: {{ gateway.UID }}</q-card>
         </div>
       </template>
     </div>
@@ -28,9 +28,9 @@ export default {
     ])
   },
   methods: {
-    routeToGroupsManagement (UID) {
+    routeToScheduleListManagement (UID) {
       if (!UID) return
-      this.$router.push({ name: 'GroupsManagement', params: { gateway: UID } })
+      this.$router.push({ name: 'SchedulingManagementList', params: { gateway: UID } })
     }
   }
 }

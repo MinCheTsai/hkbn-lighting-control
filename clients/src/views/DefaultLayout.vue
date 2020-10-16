@@ -18,6 +18,16 @@ export default {
   components: {
     'sc-header': Header,
     'sc-drawer': Drawer
+  },
+  async beforeMount () {
+    try {
+      if (!this.checkTokenValidityPeriod()) {
+        await this.refreshToken()
+      }
+    } catch (error) {
+      this._showErrorNotify('Refresh Token Error')
+      console.log('checkTokenValidityPeriod error', error)
+    }
   }
 }
 </script>

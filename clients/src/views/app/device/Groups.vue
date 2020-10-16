@@ -281,10 +281,7 @@ export default {
           this.fetchingControllers = false
         })
     },
-    switchControl (group, status) {
-      // this.SwitchGroup({ group, status })
-    },
-    onScroll ({ to, ref }) {
+    onScroll () {
     }
   }
 }

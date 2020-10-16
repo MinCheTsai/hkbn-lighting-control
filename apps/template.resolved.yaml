@@ -13,13 +13,21 @@ Parameters:
 
   BucketName:
     Type: String
-    Default: miap-pocjason-ap-southeast-1
+    Default: miap-pocjason-ap-southeast-1 ## 隨環境更改
+
+  UserEmail:
+    Type: String
+    Default: poke@softchef.com ## 隨環境更改
+
+  UserPassword:
+    Type: String
+    Default: '52657055' ## 隨環境更改
 
 Globals:
   Function:
     Runtime: nodejs12.x
     Handler: app.handler
-    Timeout: 3
+    Timeout: 10
 
 Resources:
   UserIdentityPoolAuthenticatedRole:
@@ -36,27 +44,6 @@ Resources:
               - Action: cognito-identity:*
                 Effect: Allow
                 Resource: '*'
-        - PolicyName: IoTPrincipalPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Action:
-                - s3:GetObject
-                - iot:AttachPrincipalPolicy
-                - iot:DescribeEndpoint
-                Effect: Allow
-                Resource: '*'
-        - PolicyName: S3BucketActionPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Action:
-                - s3:PutObject
-                - s3:DeleteObject
-                Effect: Allow
-                Resource: !Sub
-                  - arn:aws:s3:::${Bukcket}/public/*
-                  - Bukcket: !Ref BucketName
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -121,19 +108,145 @@ Resources:
       Roles:
         authenticated: !GetAtt UserIdentityPoolAuthenticatedRole.Arn
 
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CloudWatchPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - events:*
+                Resource: '*'
+        - PolicyName: LambdaPermissonPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:AddPermission
+                  - lambda:RemovePermission
+                Resource: '*'
+
   # API Gateway
-  # Api:
-  #   Type: AWS::Serverless::Api
-  #   Properties:
-  #     StageName: !Ref ApiStageName
-  #     Cors:
-  #       AllowMethods: "'*'"
-  #       AllowHeaders: "'*'"
-  #       AllowOrigin: "'*'"
-  #     Auth:
-  #       Authorizers:
-  #         CognitoAuthorizer:
-  #           UserPoolArn: !GetAtt UserPool.Arn
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref ApiStageName
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+
+  GroupLightsSwitchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/group/light-switch
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        SwitchLightsByGroup:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /group/light-switch/{switch}
+            Method: post
+      Environment:
+        Variables:
+          TOKEN_EMAIL: !Ref UserEmail
+          TOKEN_PASSWORD: !Ref UserPassword
+
+  CreateGroupScheduleFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/create
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        CreateGroupSchedule:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}
+            Method: post
+      Environment:
+        Variables:
+          GroupLightsSwitchFunction_ARN: !GetAtt GroupLightsSwitchFunction.Arn
+
+  UpdateGroupScheduleFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/update
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        UpdateGroupSchedule:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}
+            Method: put
+      Environment:
+        Variables:
+          GroupLightsSwitchFunction_ARN: !GetAtt GroupLightsSwitchFunction.Arn
+
+  DeleteGroupScheduleFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/delete
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        DeleteGroupSchedule:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}
+            Method: del
+      Environment:
+        Variables:
+          GroupLightsSwitchFunction_ARN: !GetAtt GroupLightsSwitchFunction.Arn
+
+  ListGroupSchedulesFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/get-list
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        ListGroupSchedules:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}
+            Method: get
+
+  GetGroupScheduleTargetFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/get-target
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupScheduleTarget:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}/{ruleid}
+            Method: get
 
 Outputs:
   Region:
@@ -159,11 +272,14 @@ Outputs:
     Export:
       Name: !Join ['-', [ !Ref AppName, 'UserIdentityPoolId']]
 
-  # ApiId:
-  #   Value: !Ref Api
+  ApiId:
+    Value: !Ref Api
 
-  # ApiHost:
-  #   Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${ApiStageName}
+  ApiHost:
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${ApiStageName}
+
+  GroupLightsSwitchFunction:
+    Value: !GetAtt GroupLightsSwitchFunction.Arn
 
   WebBucketName:
     Value: !Ref BucketName

@@ -1,6 +1,5 @@
 import { API } from 'aws-amplify'
 import { Controller } from './model/device'
-// import { Gateway, Controller, Group } from './model/device'
 import { gateways, groups } from '../../config'
 
 export default {

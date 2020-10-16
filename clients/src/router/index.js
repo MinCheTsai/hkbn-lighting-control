@@ -41,8 +41,19 @@ const routes = [
       },
       {
         path: 'scheduling-management',
-        name: 'SchedulingManagement',
-        component: () => import(/* webpackChunkName: "scheduling" */ '../views/app/Scheduling.vue')
+        component: () => import(/* webpackChunkName: "scheduling" */ '../views/app/Scheduling.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'SchedulingManagement',
+            component: () => import(/* webpackChunkName: "scheduling" */ '../views/app/schedule/index.vue')
+          },
+          {
+            path: ':gateway',
+            name: 'SchedulingManagementList',
+            component: () => import(/* webpackChunkName: "scheduling" */ '../views/app/schedule/List.vue')
+          }
+        ]
       },
       {
         path: 'setting',
