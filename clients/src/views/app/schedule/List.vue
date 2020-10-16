@@ -11,18 +11,19 @@
       <q-table
         color="secondary"
         class="q-custom-table"
-        :data="SchedulesArray"
+        :data.sync="SchedulesArray"
         :columns="tableColumns"
         :loading="fetchingSchedules"
-        :row-key="row => row.number"
+        :row-key="row => row.name"
         virtual-scroll
-        :virtual-scroll-item-size="54"
-        :virtual-scroll-sticky-size-start="200"
+        :virtual-scroll-item-size="48"
+        :virtual-scroll-sticky-size-start="100"
         :rows-per-page-options="[0]"
         @virtual-scroll="onScroll"
       >
         <template v-slot:header="props">
           <q-tr :props="props" class="sc-table-tr-th">
+            <q-th></q-th>
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
@@ -31,9 +32,7 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props" :class="props.selected ? 'bg-secondary' : ''" class="sc-subtitle-2 sc-table-tr-td text-dark">
-            <q-td key="number" :props="props">
-              {{ props.row.number || '' }}
-            </q-td>
+            <q-td></q-td>
             <q-td key="name" :props="props">
               <p @click="openUpdateScheduleDialog(props.row)" class="q-my-none text-primary hover-underline cursor-pointer">{{ props.row.name || '' }}</p>
             </q-td>
@@ -47,7 +46,7 @@
               {{ props.row.repeat ? props.row.repeat.join(', ') : 'None' }}
             </q-td>
             <q-td key="active" :props="props">
-              <q-toggle v-model="props.row.active" color="secondary" />
+              <q-toggle v-model="props.row.active" @input="switchSchedule(props.row)" color="secondary" />
             </q-td>
             <q-td>
               <q-btn @click="openDeleteScheduleDialog(props.row)" flat color="info" icon="delete"></q-btn>
@@ -88,13 +87,6 @@ export default {
       popupDeleteSchedule: false,
       currentSchedule: null,
       tableColumns: [
-        {
-          name: 'number',
-          label: 'No.',
-          align: 'left',
-          field: row => row.number,
-          sortable: true
-        },
         {
           name: 'name',
           label: 'Name',
@@ -150,7 +142,8 @@ export default {
     ]),
     ...mapActions('schedule', [
       'GetSchedules',
-      'GetScheduleTarget'
+      'GetScheduleTarget',
+      'ChangeScheduleState'
     ]),
     fetchSchedules () {
       this.fetchingSchedules = true
@@ -165,6 +158,14 @@ export default {
           console.log(error)
           this._showErrorNotify('Get Schedules Failed')
           this.fetchingSchedules = false
+        })
+    },
+    switchSchedule (schedule) {
+      this
+        .ChangeScheduleState({ uid: this.$route.params.gateway, ruleId: schedule.id, active: schedule.active })
+        .catch(error => {
+          console.log(error)
+          this._showErrorNotify('Switch Schedule Active Failed')
         })
     },
     openUpdateScheduleDialog (shedule) {

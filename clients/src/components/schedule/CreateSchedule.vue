@@ -5,7 +5,7 @@
     </div>
     <q-form @submit="submitCreate">
       <div class="q-pa-md">
-        <q-input dense outlined v-model="name" label="Name" :rules="[ val => val && val.length > 0 || 'This feild is required', val => val.length < 49 || 'Max Length 48 Characters', val => /^[\.\-A-Za-z0-9]+$/.test(val) || 'Format Example: My-Schedule1.0']" class="q-mt-md" />
+        <q-input dense outlined v-model="name" label="Name" :rules="[ val => val && val.length > 0 || 'This feild is required', val => val.length <= 30 || 'Max Length 30 Characters', val => /^[\.\-A-Za-z0-9]+$/.test(val) || 'Format Example: My-Schedule1.0']" class="q-mt-md" />
         <q-select dense emit-value map-options outlined v-model="group" :options="GroupsArray" option-label="name" option-value="panid" label="Group" :rules="[ val => val && val.length > 0 || 'This feild is required']" class="q-mt-md">
           <template v-slot:option="scope">
             <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
@@ -113,7 +113,7 @@ export default {
           time: this.time
         })
         .then(({ data }) => {
-          this.SetSchedule({ id: data, name: data.split('_')[1], mode: this.mode, time: this.time, repeat: this.repeat, group: this.group, active: true })
+          this.SetSchedule({ id: data, name: this.name, mode: this.mode, time: this.time, repeat: this.repeat, group: this.group, active: true })
           this._showSuccessNotify('Create Schedule Success')
           this.creating = false
           this.closePopup()

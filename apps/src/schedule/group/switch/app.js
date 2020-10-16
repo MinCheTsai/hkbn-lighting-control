@@ -8,7 +8,7 @@ exports.handler = async(event) => {
 
   const validate = request.validate(joi => {
     return {
-      nextToken: joi.string().allow(null)
+      active: joi.boolean().allow(null)
     }
   })
   if (validate.error) {
@@ -18,17 +18,18 @@ exports.handler = async(event) => {
   try {
     const cloudwatchevents = new AWS.CloudWatchEvents({ apiVersion: '2015-10-07' })
 
-    const uid = request.parameter('uid')
-    const NextToken = request.input('nextToken')
+    const ruleId = request.parameter('ruleid')
+    const active = request.input('active')
 
     const params = {
-      NamePrefix: `poc-${uid}`,
-      Limit: 10,
-      NextToken
+      Name: ruleId
     }
-    const data = await cloudwatchevents.listRules(params).promise()
+    if (active) await cloudwatchevents.enableRule(params).promise()
+    else await cloudwatchevents.disableRule(params).promise()
 
-    return response.json(data)
+    return response.json({
+      data: {}
+    })
   } catch (error) {
     console.log('========error========')
     console.log(error)

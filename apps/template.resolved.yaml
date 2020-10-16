@@ -215,7 +215,7 @@ Resources:
           Properties:
             RestApiId: !Ref Api
             Path: /schedule/group/{uid}
-            Method: del
+            Method: delete
       Environment:
         Variables:
           GroupLightsSwitchFunction_ARN: !GetAtt GroupLightsSwitchFunction.Arn
@@ -247,6 +247,20 @@ Resources:
             RestApiId: !Ref Api
             Path: /schedule/group/{uid}/{ruleid}
             Method: get
+
+  ChangeGroupScheduleStateFunction:
+    DependOn: GroupLightsSwitchFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/schedule/group/switch
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        ChangeGroupScheduleState:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/group/{uid}/{ruleid}
+            Method: put
 
 Outputs:
   Region:

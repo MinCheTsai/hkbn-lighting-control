@@ -8,12 +8,7 @@ export default {
   },
   getters: {
     SchedulesArray (state) {
-      const array = []
-      array.push(...state.Schedules)
-      array.forEach((a, i) => {
-        a.number = i + 1
-      })
-      return array
+      return state.Schedules
     }
   },
   mutations: {
@@ -30,20 +25,17 @@ export default {
       })
     },
     RenewSchedule (state, updatedSchedule) {
-      const index = state.Schedules.find(schedule => {
+      const index = state.Schedules.findIndex(schedule => {
         return schedule.id === updatedSchedule.id
       })
-      state.Schedules[index] = updatedSchedule
+      state.Schedules[index] = Object.assign(state.Schedules[index], updatedSchedule)
     },
     RemoveSchedule (state, deletedSchedule) {
-      const index = state.Schedules.find(schedule => {
+      const index = state.Schedules.findIndex(schedule => {
         return schedule.id === deletedSchedule.id
       })
       state.Schedules.splice(index, 1)
     }
-    // ActiveSchedule (state, { schedule, active }) {
-    //   state.Schedules[schedule.number - 1].active = active
-    // }
   },
   actions: {
     CreateSchedule ({ commit }, { uid, panid, name, mode, days, time }) {
@@ -56,20 +48,12 @@ export default {
       }
       return API.post('schedule-api', `/schedule/group/${uid}`, { body })
     },
-    // UpdateSchedule ({ commit }, { uid, panid, name, mode, days, time }) {
-    //   const body = {
-    //     panid,
-    //     name,
-    //     switch: mode,
-    //     days,
-    //     time
-    //   }
-    //   return API.post('schedule-api', `/schedule/group/${uid}`, { body })
-    // },
-    UpdateSchedule ({ commit }, { uid, panid, ruleId, mode, days, time }) {
+    UpdateSchedule ({ commit }, { uid, panid, statementId, ruleId, targetId, mode, days, time }) {
       const body = {
         panid,
+        statementId,
         ruleId,
+        targetId,
         switch: mode,
         days,
         time
@@ -89,6 +73,12 @@ export default {
     },
     GetScheduleTarget ({ commit }, { uid, ruleId }) {
       return API.get('schedule-api', `/schedule/group/${uid}/${ruleId}`)
+    },
+    ChangeScheduleState ({ commit }, { uid, ruleId, active }) {
+      const body = {
+        active
+      }
+      return API.put('schedule-api', `/schedule/group/${uid}/${ruleId}`, { body })
     }
   }
 }
