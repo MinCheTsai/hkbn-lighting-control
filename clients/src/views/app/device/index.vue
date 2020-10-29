@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -30,12 +30,8 @@ export default {
     ])
   },
   methods: {
-    ...mapMutations('device', [
-      'SetGroups'
-    ]),
     routeToGroupsManagement (gateway) {
       if (!gateway.UID && !gateway.groups) return
-      this.SetGroups(gateway.groups)
       this.$router.push({ name: 'GroupsManagement', params: { gateway: gateway.UID } })
     }
   }

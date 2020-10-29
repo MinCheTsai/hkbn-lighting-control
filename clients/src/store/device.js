@@ -39,7 +39,6 @@ export default {
       controllers.forEach((controller, index) => {
         state.Groups[gIndex].controllers.push(new Controller(controller, index))
       })
-      console.log(state.Groups)
     },
     SetGroupLoading (state, { loading, panid }) {
       const index = state.Groups.findIndex(group => group.panid === panid)
@@ -65,35 +64,38 @@ export default {
     }
   },
   actions: {
-    GetControllersByGroup ({ commit, state, rootState }, { UID, PanID }) {
+    GetControllersByGroup ({ rootState }, { UID, PanID }) {
       const body = {
         UID,
         PanID
       }
       return API.post('proxy-light-control', '/ubec/GroupStatusSearch', { body, headers: { Authorization: rootState.user.Token } })
     },
-    GroupLightOn ({ commit, state, rootState }, { UID, PanID }) {
+    GetControllersConsumeByGroup ({ rootState }, PanID) {
+      return API.get('schedule-api', `/group/get-consume/${PanID}`)
+    },
+    GroupLightOn ({ rootState }, { UID, PanID }) {
       const body = {
         UID,
         PanID
       }
       return API.post('proxy-light-control', '/ubec/GroupLightOn', { body, headers: { Authorization: rootState.user.Token } })
     },
-    GroupLightOff ({ commit, state, rootState }, { UID, PanID }) {
+    GroupLightOff ({ rootState }, { UID, PanID }) {
       const body = {
         UID,
         PanID
       }
       return API.post('proxy-light-control', '/ubec/GroupLightOff', { body, headers: { Authorization: rootState.user.Token } })
     },
-    SingleLightOn ({ commit, state, rootState }, { UID, mac }) {
+    SingleLightOn ({ rootState }, { UID, mac }) {
       const body = {
         UID,
         destMac: mac
       }
       return API.post('proxy-light-control', '/ubec/SingleLightOn', { body, headers: { Authorization: rootState.user.Token } })
     },
-    SingleLightOff ({ commit, state, rootState }, { UID, mac }) {
+    SingleLightOff ({ rootState }, { UID, mac }) {
       const body = {
         UID,
         destMac: mac

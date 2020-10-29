@@ -32,6 +32,9 @@ export default {
     CurrentAuthenticatedUser () {
       return Auth.currentAuthenticatedUser()
     },
+    UpdateUserAttributes ({ commit }, { user, newUserAttributes }) {
+      return Auth.updateUserAttributes(user, newUserAttributes)
+    },
     GetToken ({ commit, state }) {
       const body = {
         email: state.User.email,

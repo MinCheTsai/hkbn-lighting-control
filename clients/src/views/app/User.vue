@@ -4,15 +4,24 @@
     <div class="row justify-end">
       <q-btn @click="popupChangePassword=true" color="primary" label="Change Password" no-caps class="glossy"></q-btn>
     </div>
-    <div class="row">
+    <div class="row items-center q-col-gutter-xs col-12">
+      <div class="col-12">
+        <label class="text-subtitle1">Name</label>
+      </div>
       <div class="col-8">
-        <label class="text-subtitle1 q-mb-sm">Name</label>
-        <q-input disable dense outlined v-model="name" />
+        <q-input :disable="!isEdit" dense outlined v-model="nickname" />
+      </div>
+      <div class="col-4">
+        <q-btn :loading="loading" @click="updateUserName()" v-if="isEdit" color="primary" round flat icon="save"></q-btn>
+        <q-btn :loading="loading" @click="isEdit=true" v-else color="primary" round flat icon="edit"></q-btn>
+      </div>
+      <div class="col-12">
         <label class="text-subtitle1 q-mb-sm q-mt-md">Email</label>
+      </div>
+      <div class="col-8">
         <q-input disable dense outlined v-model="email" />
       </div>
     </div>
-    <!-- <q-btn :loading="loading" @click="test">Test</q-btn> -->
     <q-dialog v-model="popupChangePassword" persistent transition-show="scale" transition-hide="scale">
       <change-password :user="user" @close="popupChangePassword=false" />
     </q-dialog>
@@ -29,18 +38,21 @@ export default {
   },
   data () {
     return {
-      name: 'Jack',
-      email: 'jack@jack.com',
+      nickname: null,
+      email: null,
       popupChangePassword: false,
       user: null,
-      loading: false
+      loading: false,
+      isEdit: false
     }
   },
   beforeMount () {
     this
       .CurrentAuthenticatedUser()
       .then(user => {
-        this.user = user
+        this.email = user.attributes.email || null
+        this.nickname = user.attributes.nickname || null
+        this.user = user || null
       })
       .catch(error => {
         console.log('currentAuthenticatedUser', error)
@@ -48,21 +60,22 @@ export default {
   },
   methods: {
     ...mapActions('user', [
-      'CurrentAuthenticatedUser'
+      'CurrentAuthenticatedUser',
+      'UpdateUserAttributes'
     ]),
-    async test () {
+    updateUserName () {
       this.loading = true
-      try {
-        if (!this.checkTokenValidityPeriod()) {
-          await this.refreshToken()
-        }
-        console.log(this.Token)
-        console.log(this.TokenValidityPeriod)
-        this.loading = false
-      } catch (error) {
-        console.log('test error', error)
-        this.loading = false
-      }
+      this
+        .UpdateUserAttributes({ user: this.user, newUserAttributes: { nickname: this.nickname } })
+        .then(() => {
+          this.loading = false
+          this.isEdit = false
+        })
+        .catch(error => {
+          this.loading = false
+          this.isEdit = false
+          console.log(error)
+        })
     }
   }
 }

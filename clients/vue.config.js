@@ -6,6 +6,9 @@ module.exports = {
       rtlSupport: false
     }
   },
+  devServer: {
+    port: 8010
+  },
   transpileDependencies: [
     'quasar'
   ]

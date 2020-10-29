@@ -11,6 +11,7 @@ export class Controller {
     this.connect = controller.status === 1 ? true : controller.status === 2
     this.switch = controller.status === 1
     this.loading = false
+    this.totalTime = controller.totalTime
   }
 }
 export class Group {

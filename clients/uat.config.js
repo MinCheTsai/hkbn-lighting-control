@@ -36,6 +36,7 @@ export const gateways = [
     groups: [
       {
         panid: '0014',
+        gatewayId: 'PYK9AW4GRZRTNHYU111A',
         name: 'test2',
         loading: false,
         switch: null
@@ -48,6 +49,7 @@ export const gateways = [
     groups: [
       {
         panid: '0016',
+        gatewayId: '26YG1C9ZPTAHXNT5111A',
         name: 'test',
         loading: false,
         switch: null

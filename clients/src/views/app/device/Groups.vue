@@ -40,9 +40,9 @@
             <!-- <q-td key="type" :props="props">
               {{ props.row.type || '' }}
             </q-td> -->
-            <q-td key="status" :props="props">
+            <!-- <q-td key="status" :props="props">
               {{ props.row.status || 'Available' }}
-            </q-td>
+            </q-td> -->
             <q-td key="control" :props="props" class="q-gutter-x-sm">
               <q-btn @click="TurnOnGroup(props.row)" :outline="!(props.row.switch===true)" color="positive" label="ON" no-caps class="text-caption text-weight-medium"></q-btn>
               <q-btn @click="TurnOffGroup(props.row)" :outline="!(props.row.switch===false)" color="negative" label="OFF" no-caps class="text-caption text-weight-medium"></q-btn>
@@ -55,15 +55,17 @@
                 <table class="full-width">
                   <tr>
                     <td>Controller ID</td>
-                    <td class="text-center">Type</td>
+                    <!-- <td class="text-center">Type</td> -->
                     <td class="text-center">Status</td>
+                    <td class="text-center">Total (min)</td>
                     <td class="text-center">Control</td>
                   </tr>
                   <template v-for="(controller, index) in props.row.controllers">
                     <tr :key="`${props.row.panid}-controller-${index}`" class="text-primary">
                       <td>{{ controller.mac }}</td>
-                      <td class="text-center">{{ controller.type }}</td>
+                      <!-- <td class="text-center">{{ controller.type }}</td> -->
                       <td class="text-center">{{ controller.connect ? 'Connect' : 'Disconnect' }}</td>
+                      <td class="text-center">{{ controller.totalTime }}</td>
                       <td class="text-center q-gutter-x-sm">
                         <q-btn @click="TurnOnController(controller, index, props)" :outline="!controller.switch" color="positive" label="ON" no-caps class="text-caption text-weight-medium"></q-btn>
                         <q-btn @click="TurnOffController(controller, index, props)" :outline="controller.switch" color="negative" label="OFF" no-caps class="text-caption text-weight-medium"></q-btn>
@@ -115,13 +117,13 @@ export default {
         //   field: row => row.type,
         //   sortable: true
         // },
-        {
-          name: 'status',
-          align: 'left',
-          label: 'Status',
-          field: row => row.status,
-          sortable: true
-        },
+        // {
+        //   name: 'status',
+        //   align: 'left',
+        //   label: 'Status',
+        //   field: row => row.status,
+        //   sortable: true
+        // },
         {
           name: 'control',
           align: 'center',
@@ -133,11 +135,17 @@ export default {
   },
   computed: {
     ...mapGetters('device', [
+      'GatewaysArray',
       'GroupsArray'
     ])
   },
+  beforeMount () {
+    const currentGateway = this.GatewaysArray.find(gateway => gateway.UID === this.$route.params.gateway)
+    this.SetGroups(currentGateway.groups)
+  },
   methods: {
     ...mapMutations('device', [
+      'SetGroups',
       'SetGroupLoading',
       'SetGroupSwitch',
       'InitControllers',
@@ -146,6 +154,7 @@ export default {
     ]),
     ...mapActions('device', [
       'GetControllersByGroup',
+      'GetControllersConsumeByGroup',
       'GroupLightOn',
       'GroupLightOff',
       'SingleLightOn',
@@ -154,6 +163,7 @@ export default {
     async fecthControllers (props) {
       props.expand = !props.expand
       if (!props.expand) return
+      if (props.row.controllers) return
       this.InitControllers(props.row.panid)
       this.SetGroupLoading({ loading: true, panid: props.row.panid })
       try {
@@ -171,8 +181,21 @@ export default {
         .GetControllersByGroup({ UID: this.$route.params.gateway, PanID: props.row.panid })
         .then(({ data, status }) => {
           if (status === 'fail') throw Error({ data, status })
-          this.SetControllers({ controllers: data, panid: props.row.panid })
-          this.SetGroupLoading({ loading: false, panid: props.row.panid })
+          this
+            .GetControllersConsumeByGroup(props.row.panid)
+            .then(result => {
+              const controllersData = data.map(controller => {
+                const controllerData = result.data.find(dbData => dbData.mac === controller.mac)
+                return Object.assign({}, controller, { totalTime: controllerData.totalTime })
+              })
+              this.SetControllers({ controllers: controllersData, panid: props.row.panid })
+              this.SetGroupLoading({ loading: false, panid: props.row.panid })
+            })
+            .catch(error => {
+              console.log(error)
+              this._showErrorNotify('Get Controllers Failed')
+              this.SetGroupLoading({ loading: false, panid: props.row.panid })
+            })
         })
         .catch(error => {
           console.log(error)

@@ -17,17 +17,17 @@ Parameters:
 
   UserEmail:
     Type: String
-    Default: poke@softchef.com ## 隨環境更改
+    Default: poke@softchef.com
 
   UserPassword:
     Type: String
-    Default: '52657055' ## 隨環境更改
+    Default: '52657055'
 
 Globals:
   Function:
     Runtime: nodejs12.x
     Handler: app.handler
-    Timeout: 10
+    Timeout: 12
 
 Resources:
   UserIdentityPoolAuthenticatedRole:
@@ -124,6 +124,17 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
+        - PolicyName: DynamoDbPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - dynamodb:BatchWriteItem
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:UpdateItem
+              Resource: '*'
         - PolicyName: CloudWatchPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -142,7 +153,6 @@ Resources:
                   - lambda:RemovePermission
                 Resource: '*'
 
-  # API Gateway
   Api:
     Type: AWS::Serverless::Api
     Properties:
@@ -262,7 +272,72 @@ Resources:
             Path: /schedule/group/{uid}/{ruleid}
             Method: put
 
+  ConsumeEnergyDataPoolTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: panId
+        AttributeType: S
+      - AttributeName: mac
+        AttributeType: S
+      KeySchema:
+      - AttributeName: panId
+        KeyType: HASH
+      - AttributeName: mac
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  CalculateConsumeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/calculate
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Environment:
+        Variables:
+          TOKEN_EMAIL: !Ref UserEmail
+          TOKEN_PASSWORD: !Ref UserPassword
+          DATAPOOL_TABLE_NAME: !Ref ConsumeEnergyDataPoolTable
+
+  CalculateConsumeScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Calculate energy used "
+      ScheduleExpression: "cron(0/5 * * * ? *)"
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt CalculateConsumeFunction.Arn
+          Id: "HDCFV1"
+
+  PermissionForCalculateConsumeScheduleToInvokeLambda: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref CalculateConsumeFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CalculateConsumeScheduleRule.Arn
+
+  GetGroupConsumeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/group/get-consume
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        SwitchLightsByGroup:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /group/get-consume/{panid}
+            Method: get
+      Environment:
+        Variables:
+          DATAPOOL_TABLE_NAME: !Ref ConsumeEnergyDataPoolTable
+
 Outputs:
+  DataPoolTable:
+    Value: !Ref ConsumeEnergyDataPoolTable
+
   Region:
     Value: !Ref AWS::Region
 
