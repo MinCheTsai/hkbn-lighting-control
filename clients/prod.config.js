@@ -31,7 +31,7 @@ export const user = {
 
 export const gateways = [
   {
-    name: 'Karin Poc',
+    name: 'Karin Gateway',
     UID: 'LZ281VB3LMWW15NP111A',
     groups: [
       {

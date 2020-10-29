@@ -69,17 +69,21 @@ exports.handler = async(event) => {
 
     // =====比對資料庫與目前設備的資料，並更新燈亮狀態與累積開燈時間(若資料庫沒有該設備，則新增)=====
     const updateControllerData = []
+    const INTERVAL_TIME = process.env.INTERVAL_TIME
     allControllers.forEach(controller => {
       const dbController = allDbControllersData.find(dbController => dbController.mac === controller.mac)
       if (dbController) {
-        const newTotalTime = dbController.totalTime + (dbController.status && controller.status ? 15 : 0)
+        const newTotalTime = dbController.totalTime + (dbController.status && controller.status ? INTERVAL_TIME : 0)
         updateControllerData.push(Object.assign({}, dbController, { status: controller.status, totalTime: newTotalTime }))
       } else {
         updateControllerData.push(Object.assign({}, controller, { totalTime: 0 }))
       }
     })
     console.log('updateControllerData', updateControllerData)
-
+    if (updateControllerData.length < 1) {
+      console.log('==========No Data Update==========')
+      return
+    }
     const params = {
       RequestItems: { [process.env.DATAPOOL_TABLE_NAME]: [] }
     }

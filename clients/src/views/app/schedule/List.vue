@@ -129,13 +129,21 @@ export default {
   computed: {
     ...mapGetters('schedule', [
       'SchedulesArray'
+    ]),
+    ...mapGetters('device', [
+      'GatewaysArray'
     ])
   },
   beforeMount () {
+    const currentGateway = this.GatewaysArray.find(gateway => gateway.UID === this.$route.params.gateway)
+    this.SetGroups(currentGateway.groups)
     this.InitSchedules()
     this.fetchSchedules()
   },
   methods: {
+    ...mapMutations('device', [
+      'SetGroups'
+    ]),
     ...mapMutations('schedule', [
       'InitSchedules',
       'SetSchedules'

@@ -113,7 +113,8 @@ export default {
     ]),
     ...mapActions('schedule', [
       'GetScheduleTarget',
-      'UpdateSchedule'
+      'UpdateSchedule',
+      'NotifyEmail'
     ]),
     closePopup () {
       if (this.updating || this.loading) return
@@ -153,6 +154,7 @@ export default {
         })
         .then(() => {
           this.RenewSchedule({ id: this.schedule.id, mode: this.mode, time: this.time, repeat: this.repeat, group: this.group })
+          if (process.env.NODE_ENV === 'production') this.NotifyEmail({ type: 'Update', name: this.name, mode: this.mode, time: this.time, days: this.repeat, panid: this.group })
           this._showSuccessNotify('Update Schedule Success')
           this.updating = false
           this.closePopup()

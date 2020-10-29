@@ -1,8 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: POC
 
 Parameters:
+  Environment:
+    Type: String
+    Default: develop
+
   AppName:
     Type: String
     Default: hkb-poc
@@ -13,7 +16,7 @@ Parameters:
 
   BucketName:
     Type: String
-    Default: poc-karin-uat-ap-southeast-1 ## 隨環境更改
+    Default: s3.bucket
 
   UserEmail:
     Type: String
@@ -22,6 +25,13 @@ Parameters:
   UserPassword:
     Type: String
     Default: '52657055'
+
+  CalculateConsumeInterval:
+    Type: Number
+    Default: 15
+
+Conditions:
+  CreateProdResources: !Equals [ !Ref Environment, production ]
 
 Globals:
   Function:
@@ -124,6 +134,14 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
+        - PolicyName: SESPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - ses:*
+              Resource: '*'
         - PolicyName: DynamoDbPolicy
           PolicyDocument:
             Version: '2012-10-17'
@@ -161,6 +179,20 @@ Resources:
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
         AllowOrigin: "'*'"
+
+  NotificateScheduleChangeFunction:
+    Type: AWS::Serverless::Function
+    Condition: CreateProdResources
+    Properties:
+      CodeUri: dists/schedule/notice
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        SwitchLightsByGroup:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /schedule/notice
+            Method: post
 
   GroupLightsSwitchFunction:
     Type: AWS::Serverless::Function
@@ -299,12 +331,15 @@ Resources:
           TOKEN_EMAIL: !Ref UserEmail
           TOKEN_PASSWORD: !Ref UserPassword
           DATAPOOL_TABLE_NAME: !Ref ConsumeEnergyDataPoolTable
+          INTERVAL_TIME: !Ref CalculateConsumeInterval
 
   CalculateConsumeScheduleRule:
     Type: AWS::Events::Rule
     Properties:
       Description: "Calculate energy used "
-      ScheduleExpression: "cron(0/15 * * * ? *)"
+      ScheduleExpression: !Sub
+        - cron(0/${Interval} * * * ? *)
+        - { Interval: !Ref CalculateConsumeInterval }
       State: "ENABLED"
       Targets:
         - Arn: !GetAtt CalculateConsumeFunction.Arn
@@ -337,9 +372,6 @@ Resources:
 Outputs:
   DataPoolTable:
     Value: !Ref ConsumeEnergyDataPoolTable
-
-  Region:
-    Value: !Ref AWS::Region
 
   UserPoolId:
     Value: !Ref UserPool

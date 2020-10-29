@@ -85,13 +85,15 @@ export default {
     }
   },
   beforeMount () {
+    console.log(process.env.NODE_ENV)
   },
   methods: {
     ...mapMutations('schedule', [
       'SetSchedule'
     ]),
     ...mapActions('schedule', [
-      'CreateSchedule'
+      'CreateSchedule',
+      'NotifyEmail'
     ]),
     closePopup () {
       if (this.creating) return
@@ -114,6 +116,7 @@ export default {
         })
         .then(({ data }) => {
           this.SetSchedule({ id: data, name: this.name, mode: this.mode, time: this.time, repeat: this.repeat, group: this.group, active: true })
+          if (process.env.NODE_ENV === 'production') this.NotifyEmail({ type: 'Create', name: this.name, mode: this.mode, time: this.time, days: this.repeat, panid: this.group })
           this._showSuccessNotify('Create Schedule Success')
           this.creating = false
           this.closePopup()

@@ -79,6 +79,17 @@ export default {
         active
       }
       return API.put('schedule-api', `/schedule/group/${uid}/${ruleId}`, { body })
+    },
+    NotifyEmail ({ commit }, { type, panid, name, mode, days, time }) {
+      const body = {
+        type,
+        panid,
+        name,
+        mode,
+        days,
+        time
+      }
+      return API.post('schedule-api', '/schedule/notice', { body })
     }
   }
 }
