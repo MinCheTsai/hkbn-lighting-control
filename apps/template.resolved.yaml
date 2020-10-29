@@ -304,7 +304,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Calculate energy used "
-      ScheduleExpression: "cron(0/5 * * * ? *)"
+      ScheduleExpression: "cron(0/15 * * * ? *)"
       State: "ENABLED"
       Targets:
         - Arn: !GetAtt CalculateConsumeFunction.Arn

@@ -1,26 +1,26 @@
 // PROD
 export const Auth = {
-  // region: 'ap-southeast-1',
-  // userPoolId: 'ap-southeast-1_4JmN3Y2lj',
-  // userPoolWebClientId: '5psfjaecidia7l4ndmbj3e4ica',
-  // identityPoolId: 'ap-southeast-1:d34029cc-1394-452e-aec7-d7bb506017aa'
+  region: 'ap-southeast-1',
+  userPoolId: 'ap-southeast-1_m5IqRsoVz',
+  userPoolWebClientId: '1pqt1g743u6svcpgq16a5k8q6u',
+  identityPoolId: 'ap-southeast-1:df0e3b09-4277-4d97-91de-a957ada75675'
 }
 export const API = {
   endpoints: [
-    // {
-    //   name: 'proxy-light-control',
-    //   endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
-    // },
-    // {
-    //   name: 'schedule-api',
-    //   endpoint: 'https://9m7n5kwrig.execute-api.ap-southeast-1.amazonaws.com/Prod'
-    // }
+    {
+      name: 'proxy-light-control',
+      endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
+    },
+    {
+      name: 'schedule-api',
+      endpoint: ' https://oqszy2n98d.execute-api.ap-southeast-1.amazonaws.com/Prod'
+    }
   ]
 }
 export const Storage = {
   AWSS3: {
-    // bucket: 'miap-pocjason-ap-southeast-1',
-    // region: 'ap-southeast-1'
+    bucket: 'karin-poc-prod-ap-southeast-1',
+    region: 'ap-southeast-1'
   }
 }
 
@@ -63,16 +63,16 @@ export const gateways = [
         switch: null
       },
       {
-        panid: '0020',
+        panid: '0022',
         gatewayId: 'LZ281VB3LMWW15NP111A',
-        name: 'TAC_16F_Zone13',
+        name: 'TAC_16F_Zone9',
         loading: false,
         switch: null
       },
       {
-        panid: '0022',
+        panid: '0020',
         gatewayId: 'LZ281VB3LMWW15NP111A',
-        name: 'TAC_16F_Zone9',
+        name: 'TAC_16F_Zone13',
         loading: false,
         switch: null
       }
