@@ -45,6 +45,11 @@ export default {
       if (index < 0) return
       state.Groups[index].loading = loading
     },
+    SetGroupExporting (state, { exporting, panid }) {
+      const index = state.Groups.findIndex(group => group.panid === panid)
+      if (index < 0) return
+      state.Groups[index].exporting = exporting
+    },
     SetGroupSwitch (state, { switchGroup, panid }) {
       const gIndex = state.Groups.findIndex(group => group.panid === panid)
       if (gIndex < 0) return
@@ -71,8 +76,11 @@ export default {
       }
       return API.post('proxy-light-control', '/ubec/GroupStatusSearch', { body, headers: { Authorization: rootState.user.Token } })
     },
-    GetControllersConsumeByGroup ({ rootState }, PanID) {
-      return API.get('schedule-api', `/group/get-consume/${PanID}`)
+    GetControllersConsumeByGroup ({ rootState }, { uid, macs }) {
+      const body = {
+        macs
+      }
+      return API.post('schedule-api', `/group/get-consume/${uid}`, { body })
     },
     GroupLightOn ({ rootState }, { UID, PanID }) {
       const body = {

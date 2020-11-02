@@ -71,9 +71,9 @@ exports.handler = async(event) => {
       status: 'success'
     })
   } catch (error) {
-    console.log('========Error========')
+    console.log('======Error======')
     console.log(error)
-    console.log('========Error========')
+    console.log('======Error======')
     return response.error(error, error.statusCode || 500)
   }
 }

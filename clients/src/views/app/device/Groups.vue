@@ -24,12 +24,13 @@
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
+            <q-th>Export</q-th>
           </q-tr>
         </template>
         <template v-slot:body="props">
           <q-tr :props="props" :class="props.selected ? 'bg-secondary' : ''" class="sc-subtitle-2 sc-table-tr-td text-dark">
             <q-td auto-width>
-              <q-btn size="sm" color="secondary" round dense @click="fecthControllers(props)" :icon="props.expand ? 'expand_less' : 'expand_more'" />
+              <q-btn size="sm" color="secondary" round dense @click="expendControllerList(props)" :icon="props.expand ? 'expand_less' : 'expand_more'" />
             </q-td>
             <q-td key="id" :props="props">
               {{ props.row.panid || '' }}
@@ -47,18 +48,21 @@
               <q-btn @click="TurnOnGroup(props.row)" :outline="!(props.row.switch===true)" color="positive" label="ON" no-caps class="text-caption text-weight-medium"></q-btn>
               <q-btn @click="TurnOffGroup(props.row)" :outline="!(props.row.switch===false)" color="negative" label="OFF" no-caps class="text-caption text-weight-medium"></q-btn>
             </q-td>
+            <q-td auto-width>
+              <q-btn :loading="props.row.exporting" flat @click="exportCSV(props.row)" color="primary" icon="save"></q-btn>
+            </q-td>
           </q-tr>
           <q-tr v-show="props.expand" :props="props">
             <q-td colspan="100%">
               <q-skeleton v-if="props.row.loading" type="text" />
               <div v-else>
                 <table class="full-width">
-                  <tr>
-                    <td>Controller ID</td>
+                  <tr class="text-center">
+                    <td class="text-left">Controller ID</td>
                     <!-- <td class="text-center">Type</td> -->
-                    <td class="text-center">Status</td>
-                    <td class="text-center">Total (min)</td>
-                    <td class="text-center">Control</td>
+                    <td>Status</td>
+                    <td>Total (min)</td>
+                    <td>Control</td>
                   </tr>
                   <template v-for="(controller, index) in props.row.controllers">
                     <tr :key="`${props.row.panid}-controller-${index}`" class="text-primary">
@@ -150,7 +154,8 @@ export default {
       'SetGroupSwitch',
       'InitControllers',
       'SetControllers',
-      'SetControllerSwitch'
+      'SetControllerSwitch',
+      'SetGroupExporting'
     ]),
     ...mapActions('device', [
       'GetControllersByGroup',
@@ -160,12 +165,15 @@ export default {
       'SingleLightOn',
       'SingleLightOff'
     ]),
-    async fecthControllers (props) {
+    async expendControllerList (props) {
       props.expand = !props.expand
       if (!props.expand) return
       if (props.row.controllers) return
-      this.InitControllers(props.row.panid)
-      this.SetGroupLoading({ loading: true, panid: props.row.panid })
+      await this.fecthControllers(props.row.panid)
+    },
+    async fecthControllers (panId) {
+      this.InitControllers(panId)
+      this.SetGroupLoading({ loading: true, panid: panId })
       try {
         if (!this.checkTokenValidityPeriod()) {
           await this.refreshToken()
@@ -173,35 +181,31 @@ export default {
       } catch (error) {
         this._showErrorNotify('Refresh Token Error')
         console.log('checkTokenValidityPeriod error', error)
-        this.SetGroupLoading({ loading: false, panid: props.row.panid })
+        this.SetGroupLoading({ loading: false, panid: panId })
         return
       }
       this.InitControllers()
-      this
-        .GetControllersByGroup({ UID: this.$route.params.gateway, PanID: props.row.panid })
-        .then(({ data, status }) => {
-          if (status === 'fail') throw Error({ data, status })
-          this
-            .GetControllersConsumeByGroup(props.row.panid)
-            .then(result => {
-              const controllersData = data.map(controller => {
-                const controllerData = result.data.find(dbData => dbData.mac === controller.mac)
-                return Object.assign({}, controller, { totalTime: controllerData.totalTime })
-              })
-              this.SetControllers({ controllers: controllersData, panid: props.row.panid })
-              this.SetGroupLoading({ loading: false, panid: props.row.panid })
-            })
-            .catch(error => {
-              console.log(error)
-              this._showErrorNotify('Get Controllers Failed')
-              this.SetGroupLoading({ loading: false, panid: props.row.panid })
-            })
+      try {
+        const { data, status } = await this.GetControllersByGroup({ UID: this.$route.params.gateway, PanID: panId })
+        if (status === 'fail') throw Error({ data, status })
+        const macs = data.map(controller => controller.mac)
+        const result = await this.GetControllersConsumeByGroup({ uid: this.$route.params.gateway, macs })
+        const controllersData = data.map(controller => {
+          const controllerData = result.data.find(dbData => dbData.mac === controller.mac)
+          if (controllerData) {
+            return Object.assign({}, controller, { totalTime: controllerData.totalTime, lastUpdated: controllerData.lastUpdated, createdTime: controllerData.createdTime })
+          } else {
+            return Object.assign({}, controller, { totalTime: 0, lastUpdated: 'none', createdTime: 'none' })
+          }
         })
-        .catch(error => {
-          console.log(error)
-          this._showErrorNotify('Get Controllers Failed')
-          this.SetGroupLoading({ loading: false, panid: props.row.panid })
-        })
+        this.SetControllers({ controllers: controllersData, panid: panId })
+        this.SetGroupLoading({ loading: false, panid: panId })
+      } catch (error) {
+        console.log(error)
+        this._showErrorNotify('Get Controllers Failed')
+        this.SetGroupLoading({ loading: false, panid: panId })
+        throw new Error(error)
+      }
     },
     async TurnOnGroup (group) {
       this.SetGroupSwitch({ panid: group.panid, switchGroup: true })
@@ -302,6 +306,41 @@ export default {
           this._showErrorNotify('Control Failed')
           this.fetchingControllers = false
         })
+    },
+    async exportCSV (groupData) {
+      this.SetGroupExporting({ exporting: true, panid: groupData.panid })
+      try {
+        if (!groupData.controllers) {
+          await this.fecthControllers(groupData.panid)
+        }
+        let csvContent = 'data:text/csv;charset=utf-8,'
+        const controllerDataset = groupData.controllers.map(controller => {
+          return {
+            mac: controller.mac,
+            totalTime: controller.totalTime,
+            lastUpdated: this.$moment(controller.lastUpdated).format('YYYY-MM-DD hh:mm'),
+            createdTime: this.$moment(controller.createdTime).format('YYYY-MM-DD hh:mm')
+          }
+        })
+        const column = Object.keys(controllerDataset[0])
+        csvContent += column + '\r\n'
+        controllerDataset.forEach(controller => {
+          const controllerData = Object.values(controller)
+          const row = controllerData.join(',')
+          csvContent += row + '\r\n'
+        })
+        var encodedUri = encodeURI(csvContent)
+        var link = document.createElement('a')
+        link.setAttribute('href', encodedUri)
+        link.setAttribute('id', 'exportCSV')
+        link.setAttribute('download', `${this.$moment().format('YYYYMMDD')}-${groupData.panid}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.SetGroupExporting({ exporting: false, panid: groupData.panid })
+      } catch (error) {
+        this.SetGroupExporting({ exporting: false, panid: groupData.panid })
+      }
     },
     onScroll () {
     }

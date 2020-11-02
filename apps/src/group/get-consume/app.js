@@ -7,19 +7,21 @@ exports.handler = async(event) => {
   const response = new Response()
 
   try {
-    const panId = request.parameter('panid')
+    const uid = request.parameter('uid')
+    const macs = request.input('macs')
     const documentClient = new AWS.DynamoDB.DocumentClient()
     const params = {
-      TableName: process.env.DATAPOOL_TABLE_NAME,
-      KeyConditionExpression: 'panId = :panId',
-      ExpressionAttributeValues: {
-        ':panId': panId
+      RequestItems: {
+        [process.env.DATAPOOL_TABLE_NAME]: { Keys: [] }
       }
     }
-    const { Items } = await documentClient.query(params).promise()
+    macs.forEach(mac => {
+      params.RequestItems[process.env.DATAPOOL_TABLE_NAME].Keys.push({ mac, uid })
+    })
+    const { Responses } = await documentClient.batchGet(params).promise()
 
     return response.json({
-      data: Items
+      data: Responses[process.env.DATAPOOL_TABLE_NAME]
     })
   } catch (error) {
     console.log('========Error========')

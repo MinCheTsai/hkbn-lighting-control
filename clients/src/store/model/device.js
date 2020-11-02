@@ -12,6 +12,8 @@ export class Controller {
     this.switch = controller.status === 1
     this.loading = false
     this.totalTime = controller.totalTime
+    this.lastUpdated = controller.lastUpdated
+    this.createdTime = controller.createdTime
   }
 }
 export class Group {
@@ -20,5 +22,6 @@ export class Group {
     this.qty = group.qty || 0
     this.switch = group.control || null
     this.loading = group.loading || false
+    this.exporting = false
   }
 }

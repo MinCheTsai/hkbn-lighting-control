@@ -1,7 +1,6 @@
 'use strict'
 const AWS = require('aws-sdk')
 const axios = require('axios')
-const _ = require('lodash')
 const { gateways } = require('../../config')
 
 exports.handler = async(event) => {
@@ -19,44 +18,43 @@ exports.handler = async(event) => {
     if (result.data.status === 'fail') throw Error(result.data)
     else Authorization = result.data.data.token
 
-    // =====取目前設備資料=====
-    const allGroups = _.flatten(gateways.map(gateway => gateway.groups))
-    const resultControllers = await Promise.all(allGroups.map(group => axios.request({
-      url: 'https://fae.cloudpe.com:10000/api/ubec/GroupStatusSearch',
+    // =====取所有設備資料=====
+    const resultControllers = await Promise.all(gateways.map(gateway => axios.request({
+      url: 'https://fae.cloudpe.com:10000/api/ubec/LightingListSearch',
       method: 'post',
       headers: {
         Authorization
       },
       data: {
-        PanID: group.panid,
-        UID: group.gatewayId
+        UID: gateway.UID
       }
     })))
     const allControllers = []
-    const onlineGroupsId = []
+    const onlineGatewaysUid = []
     resultControllers.forEach(result => {
       if (result.data.status !== 'success') return
-      const panId = JSON.parse(result.config.data).PanID
-      onlineGroupsId.push(panId)
+      const UID = JSON.parse(result.config.data).UID
+      onlineGatewaysUid.push(UID)
       allControllers.push(...result.data.data.map(controller => {
         return {
           mac: controller.mac,
           status: controller.status === 1,
-          panId: panId
+          uid: UID
         }
       }))
     })
-    console.log('onlineGroupsId', onlineGroupsId)
+    console.log('onlineGatewaysUid', onlineGatewaysUid)
     console.log('allControllers', allControllers)
 
-    // =====取資料庫裡的設備資料(用有在連線中的 GroupId 去查)=====
+    // =====取資料庫裡的設備資料(用有在連線中的 UID 去查)=====
     const documentClient = new AWS.DynamoDB.DocumentClient()
-    const dbResults = await Promise.all(onlineGroupsId.map(groupId => {
+    const dbResults = await Promise.all(onlineGatewaysUid.map(uid => {
       const params = {
         TableName: process.env.DATAPOOL_TABLE_NAME,
-        KeyConditionExpression: 'panId = :panId',
+        IndexName: 'query-by-uid',
+        KeyConditionExpression: 'uid = :uid',
         ExpressionAttributeValues: {
-          ':panId': groupId
+          ':uid': uid
         }
       }
       return documentClient.query(params).promise()
@@ -73,10 +71,10 @@ exports.handler = async(event) => {
     allControllers.forEach(controller => {
       const dbController = allDbControllersData.find(dbController => dbController.mac === controller.mac)
       if (dbController) {
-        const newTotalTime = dbController.totalTime + (dbController.status && controller.status ? INTERVAL_TIME : 0)
-        updateControllerData.push(Object.assign({}, dbController, { status: controller.status, totalTime: newTotalTime }))
+        const newTotalTime = dbController.totalTime + (dbController.status && controller.status ? Number(INTERVAL_TIME) : 0)
+        updateControllerData.push(Object.assign({}, dbController, { status: controller.status, totalTime: newTotalTime, lastUpdated: Date.now() }))
       } else {
-        updateControllerData.push(Object.assign({}, controller, { totalTime: 0 }))
+        updateControllerData.push(Object.assign({}, controller, { totalTime: 0, lastUpdated: Date.now(), createdTime: Date.now() }))
       }
     })
     console.log('updateControllerData', updateControllerData)

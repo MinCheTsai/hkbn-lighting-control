@@ -1,8 +1,7 @@
 // PROD
 module.exports = {
   sender: 'jasonzhuang@softchef.com',
-  receivers: ['jasonzhuang@softchef.com', 'jason71708@gmail.com', 'aaronkuo@softchef.com'],
-  // receivers: ['ben.wl.ip@karin.com.hk', 'chris.wong@newspirit.com.hk', 'jason.wong@karin.com.hk'],
+  receivers: ['ben.wl.ip@karin.com.hk', 'chris.wong@newspirit.com.hk', 'jason.wong@karin.com.hk'],
   gateways: [
     {
       name: 'Karin Poc',
