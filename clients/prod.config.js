@@ -31,7 +31,7 @@ export const user = {
 
 export const gateways = [
   {
-    name: 'Karin Gateway',
+    name: 'TAC Gateway',
     UID: 'LZ281VB3LMWW15NP111A',
     groups: [
       {
@@ -63,7 +63,7 @@ export const gateways = [
         switch: null
       },
       {
-        panid: '0022',
+        panid: '0021',
         gatewayId: 'LZ281VB3LMWW15NP111A',
         name: 'TAC_16F_Zone9',
         loading: false,

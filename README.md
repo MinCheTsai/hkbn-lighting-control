@@ -14,3 +14,10 @@ gateway & group 資料為寫死狀態
 
 通知寄信功能為正式環境才需要，故 SES 相關設定直接在 AWS 網站操作
 根據目前環境判斷是否建立寄信用的 lambda 與前端是否需要在更改排程後呼叫寄信 lambda
+
+!注意：
+bls 指令佈版會 cache 住 src 底下的檔案變更，切換環境佈版時因為只改 congfig 檔(不在 src 底下) 故會無法正確打包佈版。
+需在 app 與 client 的 src 下變更檔案(隨意變更，換行都可)後，bls 指令佈版才會認為檔案有更新所以重新打包。
+
+UAT 佈在 MIAP UAT
+PROD 佈在 BLS POC
