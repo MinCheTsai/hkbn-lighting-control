@@ -1,4 +1,7 @@
 // UAT
+export const Env = {
+  isPoc: false
+}
 export const Auth = {
   region: 'ap-southeast-1',
   userPoolId: 'ap-southeast-1_UqUOKOppy',
@@ -8,12 +11,12 @@ export const Auth = {
 export const API = {
   endpoints: [
     {
-      name: 'proxy-light-control',
-      endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
+      name: 'lambda-api',
+      endpoint: 'https://t6h8nghnr6.execute-api.ap-southeast-1.amazonaws.com/Prod'
     },
     {
-      name: 'schedule-api',
-      endpoint: 'https://t6h8nghnr6.execute-api.ap-southeast-1.amazonaws.com/Prod'
+      name: 'proxy-light-control',
+      endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
     }
   ]
 }

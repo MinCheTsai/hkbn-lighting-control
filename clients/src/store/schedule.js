@@ -46,7 +46,7 @@ export default {
         days,
         time
       }
-      return API.post('schedule-api', `/schedule/group/${uid}`, { body })
+      return API.post('lambda-api', `/schedule/group/${uid}`, { body })
     },
     UpdateSchedule ({ commit }, { uid, panid, statementId, ruleId, targetId, mode, days, time }) {
       const body = {
@@ -58,7 +58,7 @@ export default {
         days,
         time
       }
-      return API.put('schedule-api', `/schedule/group/${uid}`, { body })
+      return API.put('lambda-api', `/schedule/group/${uid}`, { body })
     },
     DeleteSchedule ({ commit }, { uid, statementId, ruleId, targetId }) {
       const body = {
@@ -66,19 +66,19 @@ export default {
         ruleId,
         targetId // bqmmohm4q
       }
-      return API.del('schedule-api', `/schedule/group/${uid}`, { body })
+      return API.del('lambda-api', `/schedule/group/${uid}`, { body })
     },
     GetSchedules ({ commit }, { uid, nextToken }) {
-      return API.get('schedule-api', `/schedule/group/${uid}`, { nextToken })
+      return API.get('lambda-api', `/schedule/group/${uid}`, { nextToken })
     },
     GetScheduleTarget ({ commit }, { uid, ruleId }) {
-      return API.get('schedule-api', `/schedule/group/${uid}/${ruleId}`)
+      return API.get('lambda-api', `/schedule/group/${uid}/${ruleId}`)
     },
     ChangeScheduleState ({ commit }, { uid, ruleId, active }) {
       const body = {
         active
       }
-      return API.put('schedule-api', `/schedule/group/${uid}/${ruleId}`, { body })
+      return API.put('lambda-api', `/schedule/group/${uid}/${ruleId}`, { body })
     },
     NotifyEmail ({ commit }, { type, panid, name, mode, days, time }) {
       const body = {
@@ -89,7 +89,7 @@ export default {
         days,
         time
       }
-      return API.post('schedule-api', '/schedule/notice', { body })
+      return API.post('lambda-api', '/schedule/notice', { body })
     }
   }
 }

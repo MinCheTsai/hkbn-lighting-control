@@ -22,6 +22,5 @@ export class Group {
     this.qty = group.qty || 0
     this.switch = group.control || null
     this.loading = group.loading || false
-    this.exporting = false
   }
 }

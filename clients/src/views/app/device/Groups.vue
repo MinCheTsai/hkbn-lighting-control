@@ -1,9 +1,13 @@
 <template>
   <div>
-    <span>
-      <router-link :to="{ name: 'GatewaysManagement' }">Gateway List</router-link> >
-      <router-link :to="{ name: 'GroupsManagement' }">Group &#38; Controller List</router-link>
-    </span>
+    <div class="row justify-between">
+      <span>
+        <router-link :to="{ name: 'GatewaysManagement' }">Gateway List</router-link> >
+        <router-link :to="{ name: 'GroupsManagement' }">Group &#38; Controller List</router-link>
+      </span>
+      <q-btn @click="popupExportCSV=true" no-caps label="Export" color="primary" icon-right="save" class="glossy"></q-btn>
+      <!-- <q-btn :loading="props.row.exporting" flat @click="exportCSV(props.row)" color="primary" icon-right="save">Export</q-btn> -->
+    </div>
     <q-card class="full-width q-mt-md">
       <q-table
         color="secondary"
@@ -24,7 +28,6 @@
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
             </q-th>
-            <q-th>Export</q-th>
           </q-tr>
         </template>
         <template v-slot:body="props">
@@ -47,9 +50,6 @@
             <q-td key="control" :props="props" class="q-gutter-x-sm">
               <q-btn @click="TurnOnGroup(props.row)" :outline="!(props.row.switch===true)" color="positive" label="ON" no-caps class="text-caption text-weight-medium"></q-btn>
               <q-btn @click="TurnOffGroup(props.row)" :outline="!(props.row.switch===false)" color="negative" label="OFF" no-caps class="text-caption text-weight-medium"></q-btn>
-            </q-td>
-            <q-td auto-width>
-              <q-btn :loading="props.row.exporting" flat @click="exportCSV(props.row)" color="primary" icon="save"></q-btn>
             </q-td>
           </q-tr>
           <q-tr v-show="props.expand" :props="props">
@@ -83,13 +83,20 @@
         </template>
       </q-table>
     </q-card>
+    <q-dialog v-model="popupExportCSV" persistent transition-show="scale" transition-hide="scale">
+      <export-csv @close="popupExportCSV=false"/>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import ExportCSV from '@/components/device/ExportCSV.vue'
 
 export default {
+  components: {
+    'export-csv': ExportCSV
+  },
   props: {
     loading: {
       type: Boolean,
@@ -98,6 +105,8 @@ export default {
   },
   data () {
     return {
+      exporting: false,
+      popupExportCSV: false,
       fetchingControllers: false,
       tableColumns: [
         {
@@ -154,12 +163,11 @@ export default {
       'SetGroupSwitch',
       'InitControllers',
       'SetControllers',
-      'SetControllerSwitch',
-      'SetGroupExporting'
+      'SetControllerSwitch'
     ]),
     ...mapActions('device', [
       'GetControllersByGroup',
-      'GetControllersConsumeByGroup',
+      'GetControllersConsume',
       'GroupLightOn',
       'GroupLightOff',
       'SingleLightOn',
@@ -189,7 +197,7 @@ export default {
         const { data, status } = await this.GetControllersByGroup({ UID: this.$route.params.gateway, PanID: panId })
         if (status === 'fail') throw Error({ data, status })
         const macs = data.map(controller => controller.mac)
-        const result = await this.GetControllersConsumeByGroup({ uid: this.$route.params.gateway, macs })
+        const result = await this.GetControllersConsume({ uid: this.$route.params.gateway, macs })
         const controllersData = data.map(controller => {
           const controllerData = result.data.find(dbData => dbData.mac === controller.mac)
           if (controllerData) {
@@ -306,41 +314,6 @@ export default {
           this._showErrorNotify('Control Failed')
           this.fetchingControllers = false
         })
-    },
-    async exportCSV (groupData) {
-      this.SetGroupExporting({ exporting: true, panid: groupData.panid })
-      try {
-        if (!groupData.controllers) {
-          await this.fecthControllers(groupData.panid)
-        }
-        let csvContent = 'data:text/csv;charset=utf-8,'
-        const controllerDataset = groupData.controllers.map(controller => {
-          return {
-            mac: controller.mac,
-            totalTime: controller.totalTime,
-            lastUpdated: this.$moment(controller.lastUpdated).format('YYYY-MM-DD hh:mm'),
-            createdTime: this.$moment(controller.createdTime).format('YYYY-MM-DD hh:mm')
-          }
-        })
-        const column = Object.keys(controllerDataset[0])
-        csvContent += column + '\r\n'
-        controllerDataset.forEach(controller => {
-          const controllerData = Object.values(controller)
-          const row = controllerData.join(',')
-          csvContent += row + '\r\n'
-        })
-        var encodedUri = encodeURI(csvContent)
-        var link = document.createElement('a')
-        link.setAttribute('href', encodedUri)
-        link.setAttribute('id', 'exportCSV')
-        link.setAttribute('download', `${this.$moment().format('YYYYMMDD')}-${groupData.panid}.csv`)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.SetGroupExporting({ exporting: false, panid: groupData.panid })
-      } catch (error) {
-        this.SetGroupExporting({ exporting: false, panid: groupData.panid })
-      }
     },
     onScroll () {
     }

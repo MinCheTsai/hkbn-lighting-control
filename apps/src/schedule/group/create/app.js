@@ -25,7 +25,8 @@ exports.handler = async(event) => {
 
     const uid = request.parameter('uid')
     const panid = request.input('panid')
-    const name = `poc-${uid}_` + request.input('name') + '_' + Math.random().toString(36).substring(9)
+    const name = `poc-${uid}_` + request.input('name')
+    // const name = `poc-${uid}_` + request.input('name') + '_' + Math.random().toString(36).substring(9)
     const mode = request.input('switch')
     let days = request.input('days')
     const time = request.input('time')

@@ -24,6 +24,7 @@
 
 <script>
 import { mapMutations, mapActions } from 'vuex'
+import { Env } from '../../../config'
 
 export default {
   props: {
@@ -81,7 +82,9 @@ export default {
         })
         .then(() => {
           this.RemoveSchedule(this.schedule)
-          if (process.env.NODE_ENV === 'production') this.NotifyEmail({ type: 'Delete', name: this.schedule.name, mode: this.schedule.mode, time: this.schedule.time, days: this.schedule.repeat, panid: this.schedule.group })
+          if (process.env.NODE_ENV === 'production' && Env.isPoc) {
+            this.NotifyEmail({ type: 'Delete', name: this.schedule.name, mode: this.schedule.mode, time: this.schedule.time, days: this.schedule.repeat, panid: this.schedule.group })
+          }
           this._showSuccessNotify('Delete Schedule Success')
           this.deleting = false
           this.closePopup()

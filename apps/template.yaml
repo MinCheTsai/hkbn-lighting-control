@@ -336,6 +336,23 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
+  RawDataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: mac
+        AttributeType: S
+      - AttributeName: timestamp
+        AttributeType: N
+      KeySchema:
+      - AttributeName: mac
+        KeyType: HASH
+      - AttributeName: timestamp
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
   CalculateConsumeFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -345,7 +362,8 @@ Resources:
         Variables:
           TOKEN_EMAIL: !Ref UserEmail
           TOKEN_PASSWORD: !Ref UserPassword
-          DATAPOOL_TABLE_NAME: !Ref ConsumeEnergyDataTable
+          DATA_TABLE: !Ref ConsumeEnergyDataTable
+          RAW_TABLE: !Ref RawDataTable
           INTERVAL_TIME: !Ref CalculateConsumeInterval
 
   CalculateConsumeScheduleRule:
@@ -382,7 +400,49 @@ Resources:
             Method: post
       Environment:
         Variables:
-          DATAPOOL_TABLE_NAME: !Ref ConsumeEnergyDataTable
+          DATA_TABLE: !Ref ConsumeEnergyDataTable
+
+  GetGroupConsumeByRangeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/group/get-consume-by-range
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /group/get-consume
+            Method: post
+      Environment:
+        Variables:
+          RAW_TABLE: !Ref RawDataTable
+
+  GetTokenFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/login
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/login
+            Method: post
+
+  GetControllersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/group-status-search
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/group-status-search
+            Method: post
 
 Outputs:
   DataPoolTable:

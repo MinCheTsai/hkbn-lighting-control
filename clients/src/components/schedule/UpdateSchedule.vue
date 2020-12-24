@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white" style="width:480px">
     <div class="q-pa-md bg-primary glossy">
-      <div class="text-h6 text-white">Add Schedule</div>
+      <div class="text-h6 text-white">Update Schedule</div>
     </div>
     <div class="relative-position">
       <div v-if="loading&&!scheduleTarget" style="height:200px" class="full-width">
@@ -67,6 +67,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { Env } from '../../../config'
 
 export default {
   props: {
@@ -154,7 +155,9 @@ export default {
         })
         .then(() => {
           this.RenewSchedule({ id: this.schedule.id, mode: this.mode, time: this.time, repeat: this.repeat, group: this.group })
-          if (process.env.NODE_ENV === 'production') this.NotifyEmail({ type: 'Update', name: this.name, mode: this.mode, time: this.time, days: this.repeat, panid: this.group })
+          if (process.env.NODE_ENV === 'production' && Env.isPoc) {
+            this.NotifyEmail({ type: 'Update', name: this.name, mode: this.mode, time: this.time, days: this.repeat, panid: this.group })
+          }
           this._showSuccessNotify('Update Schedule Success')
           this.updating = false
           this.closePopup()

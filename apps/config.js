@@ -1,7 +1,7 @@
 // UAT
 module.exports = {
   sender: 'jasonzhuang@softchef.com',
-  receivers: ['jasonzhuang@softchef.com', 'jason71708@gmail.com', 'aaronkuo@softchef.com', 'waglin@softchef.com'],
+  receivers: ['aaronkuo@softchef.com', 'waglin@softchef.com'],
   gateways: [
     {
       name: 'Karin ubec Demo',

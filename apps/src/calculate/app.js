@@ -50,7 +50,7 @@ exports.handler = async(event) => {
     const documentClient = new AWS.DynamoDB.DocumentClient()
     const dbResults = await Promise.all(onlineGatewaysUid.map(uid => {
       const params = {
-        TableName: process.env.DATAPOOL_TABLE_NAME,
+        TableName: process.env.DATA_TABLE,
         IndexName: 'query-by-uid',
         KeyConditionExpression: 'uid = :uid',
         ExpressionAttributeValues: {
@@ -66,33 +66,65 @@ exports.handler = async(event) => {
     console.log('allDbControllersData', allDbControllersData)
 
     // =====比對資料庫與目前設備的資料，並更新燈亮狀態與累積開燈時間(若資料庫沒有該設備，則新增)=====
-    const updateControllerData = []
     const INTERVAL_TIME = process.env.INTERVAL_TIME
+    const timeEquation = 8 * 60 * 60 * 1000 // GMT +8:00
+    const updateControllerData = []
+    const newRawData = []
     allControllers.forEach(controller => {
       const dbController = allDbControllersData.find(dbController => dbController.mac === controller.mac)
       if (dbController) {
-        const newTotalTime = dbController.totalTime + (dbController.status && controller.status ? Number(INTERVAL_TIME) : 0)
-        updateControllerData.push(Object.assign({}, dbController, { status: controller.status, totalTime: newTotalTime, lastUpdated: Date.now() }))
+        let newTotalTime = dbController.totalTime + (dbController.status && controller.status ? Number(INTERVAL_TIME) : 0)
+        if (dbController.status && controller.status) {
+          newRawData.push({
+            mac: dbController.mac,
+            uid: dbController.uid,
+            duration: Number(INTERVAL_TIME),
+            timestamp: Date.now() + timeEquation
+          })
+        }
+        updateControllerData.push(Object.assign({}, dbController, { status: controller.status, totalTime: newTotalTime, lastUpdated: Date.now() + timeEquation }))
       } else {
-        updateControllerData.push(Object.assign({}, controller, { totalTime: 0, lastUpdated: Date.now(), createdTime: Date.now() }))
+        updateControllerData.push(Object.assign({}, controller, { totalTime: 0, lastUpdated: Date.now() + (8 * 60 * 60 * 1000), createdTime: Date.now() + timeEquation }))
+        if (controller.status) {
+          newRawData.push({
+            mac: controller.mac,
+            uid: controller.uid,
+            duration: Number(INTERVAL_TIME),
+            timestamp: Date.now() + timeEquation
+          })
+        }
       }
     })
     console.log('updateControllerData', updateControllerData)
-    if (updateControllerData.length < 1) {
-      console.log('==========No Data Update==========')
-      return
-    }
-    const params = {
-      RequestItems: { [process.env.DATAPOOL_TABLE_NAME]: [] }
-    }
-    updateControllerData.forEach(controller => {
-      params.RequestItems[process.env.DATAPOOL_TABLE_NAME].push({
-        PutRequest: {
-          Item: controller
-        }
+    console.log('newRawData', newRawData)
+
+    // =====寫入 DB，一個存總開燈時數與狀態，另個存單次紀錄時數=====
+    if (updateControllerData.length > 1) {
+      const params = {
+        RequestItems: { [process.env.DATA_TABLE]: [] }
+      }
+      updateControllerData.forEach(controller => {
+        params.RequestItems[process.env.DATA_TABLE].push({
+          PutRequest: {
+            Item: controller
+          }
+        })
       })
-    })
-    await documentClient.batchWrite(params).promise()
+      await documentClient.batchWrite(params).promise()
+    }
+    if (newRawData.length > 1) {
+      const params = {
+        RequestItems: { [process.env.RAW_TABLE]: [] }
+      }
+      newRawData.forEach(rawData => {
+        params.RequestItems[process.env.RAW_TABLE].push({
+          PutRequest: {
+            Item: rawData
+          }
+        })
+      })
+      await documentClient.batchWrite(params).promise()
+    }
   } catch (error) {
     console.log('========Error========')
     console.log(error)

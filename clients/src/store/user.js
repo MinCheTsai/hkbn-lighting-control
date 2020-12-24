@@ -40,7 +40,7 @@ export default {
         email: state.User.email,
         password: state.User.password
       }
-      return API.post('proxy-light-control', '/login', { body })
+      return API.post('lambda-api', '/ubec-cors/login', { body })
     }
   }
 }
