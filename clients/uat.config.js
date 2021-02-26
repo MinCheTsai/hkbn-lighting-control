@@ -13,10 +13,6 @@ export const API = {
     {
       name: 'lambda-api',
       endpoint: 'https://t6h8nghnr6.execute-api.ap-southeast-1.amazonaws.com/Prod'
-    },
-    {
-      name: 'proxy-light-control',
-      endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
     }
   ]
 }

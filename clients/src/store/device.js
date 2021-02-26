@@ -90,28 +90,28 @@ export default {
         UID,
         PanID
       }
-      return API.post('proxy-light-control', '/ubec/GroupLightOn', { body, headers: { Authorization: rootState.user.Token } })
+      return API.post('lambda-api', '/ubec-cors/group-light-on', { body, headers: { Authorization: rootState.user.Token } })
     },
     GroupLightOff ({ rootState }, { UID, PanID }) {
       const body = {
         UID,
         PanID
       }
-      return API.post('proxy-light-control', '/ubec/GroupLightOff', { body, headers: { Authorization: rootState.user.Token } })
+      return API.post('lambda-api', '/ubec-cors/group-light-off', { body, headers: { Authorization: rootState.user.Token } })
     },
     SingleLightOn ({ rootState }, { UID, mac }) {
       const body = {
         UID,
         destMac: mac
       }
-      return API.post('proxy-light-control', '/ubec/SingleLightOn', { body, headers: { Authorization: rootState.user.Token } })
+      return API.post('lambda-api', '/ubec-cors/single-light-on', { body, headers: { Authorization: rootState.user.Token } })
     },
     SingleLightOff ({ rootState }, { UID, mac }) {
       const body = {
         UID,
         destMac: mac
       }
-      return API.post('proxy-light-control', '/ubec/SingleLightOff', { body, headers: { Authorization: rootState.user.Token } })
+      return API.post('lambda-api', '/ubec-cors/single-light-off', { body, headers: { Authorization: rootState.user.Token } })
     }
   }
 }

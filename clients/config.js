@@ -1,28 +1,24 @@
-// UAT
+// PROD
 export const Env = {
-  isPoc: false
+  isPoc: true
 }
 export const Auth = {
   region: 'ap-southeast-1',
-  userPoolId: 'ap-southeast-1_UqUOKOppy',
-  userPoolWebClientId: '30cq025timi91rpft7k3v9pvn2',
-  identityPoolId: 'ap-southeast-1:e03080ce-d5c7-4b86-a6f7-b931d70eabbc'
+  userPoolId: 'ap-southeast-1_m5IqRsoVz',
+  userPoolWebClientId: '1pqt1g743u6svcpgq16a5k8q6u',
+  identityPoolId: 'ap-southeast-1:df0e3b09-4277-4d97-91de-a957ada75675'
 }
 export const API = {
   endpoints: [
     {
       name: 'lambda-api',
-      endpoint: 'https://t6h8nghnr6.execute-api.ap-southeast-1.amazonaws.com/Prod'
-    },
-    {
-      name: 'proxy-light-control',
-      endpoint: 'https://cors-anywhere.herokuapp.com/https://fae.cloudpe.com:10000/api'
+      endpoint: ' https://oqszy2n98d.execute-api.ap-southeast-1.amazonaws.com/Prod'
     }
   ]
 }
 export const Storage = {
   AWSS3: {
-    bucket: 'poc-karin-uat-ap-southeast-1',
+    bucket: 'karin-poc-prod-ap-southeast-1',
     region: 'ap-southeast-1'
   }
 }
@@ -34,51 +30,51 @@ export const user = {
 
 export const gateways = [
   {
-    name: 'Karin ubec Demo',
-    UID: 'PYK9AW4GRZRTNHYU111A',
+    name: 'TAC Gateway',
+    UID: 'LZ281VB3LMWW15NP111A',
     groups: [
       {
-        panid: '0014',
-        gatewayId: 'PYK9AW4GRZRTNHYU111A',
-        name: 'test2',
+        panid: '001c',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_ALL',
         loading: false,
         switch: null
-      }
-    ]
-  },
-  {
-    name: 'SoftChef Test',
-    UID: '26YG1C9ZPTAHXNT5111A',
-    groups: [
+      },
       {
-        panid: '0016',
-        gatewayId: '26YG1C9ZPTAHXNT5111A',
-        name: 'test',
+        panid: '001d',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_Zone1',
+        loading: false,
+        switch: null
+      },
+      {
+        panid: '001e',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_Zone7',
+        loading: false,
+        switch: null
+      },
+      {
+        panid: '001f',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_Zone8',
+        loading: false,
+        switch: null
+      },
+      {
+        panid: '0021',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_Zone9',
+        loading: false,
+        switch: null
+      },
+      {
+        panid: '0020',
+        gatewayId: 'LZ281VB3LMWW15NP111A',
+        name: 'TAC_16F_Zone13',
         loading: false,
         switch: null
       }
     ]
   }
 ]
-
-// export const controllers = [
-//   {
-//     mac: 'ACB859FF00883F1D'
-//   },
-//   {
-//     mac: 'ACB859FF00883EBB'
-//   },
-//   ==========================
-//   {
-//     mac: 'ACB859FF00A806EF'
-//   },
-//   {
-//     mac: 'ACB859FF00A80698'
-//   },
-//   {
-//     mac: 'ACB859FF00883032'
-//   },
-//   {
-//     mac: 'ACB859FF00A80685'
-//   }
-// ]

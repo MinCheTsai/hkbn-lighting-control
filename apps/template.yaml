@@ -444,6 +444,58 @@ Resources:
             Path: /ubec-cors/group-status-search
             Method: post
 
+  GroupLightOnFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/group-light-on
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/group-light-on
+            Method: post
+
+  GroupLightOffFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/group-light-off
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/group-light-off
+            Method: post
+
+  SingleLightOnFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/single-light-on
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/single-light-on
+            Method: post
+
+  SingleLightOffFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dists/ubec-cors/single-light-off
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Events:
+        GetGroupConsume:   
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /ubec-cors/single-light-off
+            Method: post
+
 Outputs:
   DataPoolTable:
     Value: !Ref ConsumeEnergyDataTable
