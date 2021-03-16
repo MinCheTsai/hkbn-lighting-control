@@ -1,5 +1,6 @@
 <template>
   <q-layout view="hHh lpR lFf">
+    <span style="position:fixed;left:0;bottom:0;z-index:10000;">{{ app_version }}</span>
     <sc-header />
     <sc-drawer />
     <q-page-container>
@@ -18,6 +19,11 @@ export default {
   components: {
     'sc-header': Header,
     'sc-drawer': Drawer
+  },
+  data () {
+    return {
+      app_version: process.env.VUE_APP_VERSION
+    }
   },
   async beforeMount () {
     try {
