@@ -1,5 +1,8 @@
 # hkbn-lighting-control
 
+### API 文件：
+https://docs.google.com/spreadsheets/d/1ItHlAVr-m7YOrVH88D7zfbiSf8RRvZtNjOEKFn68FBk/edit?usp=sharing
+
 ### 兩種環境：
 
 1. uat 測試環境
