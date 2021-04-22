@@ -366,25 +366,25 @@ Resources:
           RAW_TABLE: !Ref RawDataTable
           INTERVAL_TIME: !Ref CalculateConsumeInterval
 
-  CalculateConsumeScheduleRule:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: "Calculate energy used "
-      ScheduleExpression: !Sub
-        - cron(0/${Interval} * * * ? *)
-        - { Interval: !Ref CalculateConsumeInterval }
-      State: "ENABLED"
-      Targets:
-        - Arn: !GetAtt CalculateConsumeFunction.Arn
-          Id: "HDCFV1"
+  # CalculateConsumeScheduleRule:
+  #   Type: AWS::Events::Rule
+  #   Properties:
+  #     Description: "Calculate energy used "
+  #     ScheduleExpression: !Sub
+  #       - cron(0/${Interval} * * * ? *)
+  #       - { Interval: !Ref CalculateConsumeInterval }
+  #     State: "ENABLED"
+  #     Targets:
+  #       - Arn: !GetAtt CalculateConsumeFunction.Arn
+  #         Id: "HDCFV1"
 
-  PermissionForCalculateConsumeScheduleToInvokeLambda: 
-    Type: AWS::Lambda::Permission
-    Properties: 
-      FunctionName: !Ref CalculateConsumeFunction
-      Action: "lambda:InvokeFunction"
-      Principal: "events.amazonaws.com"
-      SourceArn: !GetAtt CalculateConsumeScheduleRule.Arn
+  # PermissionForCalculateConsumeScheduleToInvokeLambda: 
+  #   Type: AWS::Lambda::Permission
+  #   Properties: 
+  #     FunctionName: !Ref CalculateConsumeFunction
+  #     Action: "lambda:InvokeFunction"
+  #     Principal: "events.amazonaws.com"
+  #     SourceArn: !GetAtt CalculateConsumeScheduleRule.Arn
 
   GetGroupConsumeFunction:
     Type: AWS::Serverless::Function
