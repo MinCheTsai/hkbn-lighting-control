@@ -5,7 +5,7 @@
         <router-link :to="{ name: 'GatewaysManagement' }">Gateway List</router-link> >
         <router-link :to="{ name: 'GroupsManagement' }">Group &#38; Controller List</router-link>
       </span>
-      <q-btn @click="popupExportCSV=true" no-caps label="Export" color="primary" icon-right="save" class="glossy"></q-btn>
+      <!-- <q-btn @click="popupExportCSV=true" no-caps label="Export" color="primary" icon-right="save" class="glossy"></q-btn> -->
       <!-- <q-btn :loading="props.row.exporting" flat @click="exportCSV(props.row)" color="primary" icon-right="save">Export</q-btn> -->
     </div>
     <q-card class="full-width q-mt-md">
@@ -60,16 +60,16 @@
                   <tr class="text-center">
                     <td class="text-left">Controller ID</td>
                     <!-- <td class="text-center">Type</td> -->
-                    <td>Status</td>
-                    <td>Total (min)</td>
+                    <td class="text-left">Status</td>
+                    <!-- <td>Total (min)</td> -->
                     <td>Control</td>
                   </tr>
                   <template v-for="(controller, index) in props.row.controllers">
                     <tr :key="`${props.row.panid}-controller-${index}`" class="text-primary">
                       <td>{{ controller.mac }}</td>
                       <!-- <td class="text-center">{{ controller.type }}</td> -->
-                      <td class="text-center">{{ controller.connect ? 'Connect' : 'Disconnect' }}</td>
-                      <td class="text-center">{{ controller.totalTime }}</td>
+                      <td class="text-left">{{ controller.connect ? 'Connect' : 'Disconnect' }}</td>
+                      <!-- <td class="text-center">{{ controller.totalTime }}</td> -->
                       <td class="text-center q-gutter-x-sm">
                         <q-btn @click="TurnOnController(controller, index, props)" :outline="!controller.switch" color="positive" label="ON" no-caps class="text-caption text-weight-medium"></q-btn>
                         <q-btn @click="TurnOffController(controller, index, props)" :outline="controller.switch" color="negative" label="OFF" no-caps class="text-caption text-weight-medium"></q-btn>
