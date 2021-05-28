@@ -4,21 +4,21 @@ export const Env = {
 }
 export const Auth = {
   region: 'ap-southeast-1',
-  userPoolId: 'ap-southeast-1_zc7j8dGPC',
-  userPoolWebClientId: '5hgsemve497bea2pidgo33ki88',
-  identityPoolId: 'ap-southeast-1:1d298d93-d911-42ef-8a03-ee1b7e87d9c3'
+  userPoolId: 'ap-southeast-1_m5IqRsoVz',
+  userPoolWebClientId: '1pqt1g743u6svcpgq16a5k8q6u',
+  identityPoolId: 'ap-southeast-1:df0e3b09-4277-4d97-91de-a957ada75675'
 }
 export const API = {
   endpoints: [
     {
       name: 'lambda-api',
-      endpoint: 'https://lj52tp5uy3.execute-api.ap-southeast-1.amazonaws.com/Prod'
+      endpoint: ' https://oqszy2n98d.execute-api.ap-southeast-1.amazonaws.com/Prod'
     }
   ]
 }
 export const Storage = {
   AWSS3: {
-    bucket: 'karin-hkbn-ap-southeast-1',
+    bucket: 'karin-poc-prod-ap-southeast-1',
     region: 'ap-southeast-1'
   }
 }
